@@ -1,0 +1,59 @@
+name: Validate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Check and build
+        run: |
+          cd frontend
+          npm run build
+
+  cdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install Lambda dependencies
+        run: |
+          cd lambdas
+          npm ci
+
+      - name: Install CDK dependencies
+        run: |
+          cd cdk
+          npm ci
+
+      - name: Build CDK
+        run: |
+          cd cdk
+          npm run build
+
+      - name: Run tests
+        run: |
+          cd cdk
+          npm test
