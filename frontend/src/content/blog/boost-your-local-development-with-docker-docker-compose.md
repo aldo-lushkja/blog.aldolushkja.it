@@ -22,7 +22,7 @@ Before diving into the how-to's, let's address a fundamental question: Why shoul
 4. **Scalability**: Easily add new services as your application grows
     
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1738970501924/8d6e1555-470c-4262-80a5-5d5cad0561b9.png align="center")
+![Diagram comparing a docker-compose.yml driving multiple linked containers on a shared network versus a single Dockerfile building one image and container](https://cdn.hashnode.com/res/hashnode/image/upload/v1738970501924/8d6e1555-470c-4262-80a5-5d5cad0561b9.png)
 
 ## ⚙️Getting Started with Docker
 

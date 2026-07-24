@@ -54,6 +54,14 @@ const readingTime = estimateReadingTime(post.body ?? '');
           </div>
         )}
       </header>
+      {heroImage && (
+        <img
+          src={heroImage}
+          alt=""
+          class="mb-8 aspect-video w-full rounded-lg object-cover"
+          loading="eager"
+        />
+      )}
       <div class="prose prose-gray max-w-none dark:prose-invert">
         <slot />
       </div>
