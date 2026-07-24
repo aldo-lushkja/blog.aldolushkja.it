@@ -118,6 +118,11 @@ export class BlogSiteStack extends cdk.Stack {
         environment: { COMMIT_SHA: commitSha },
         command: ['bash', '-c', 'npm ci && npm run build && cp -r dist/* /asset-output'],
         user: 'root',
+        // Default BIND_MOUNT shares the host frontend/ dir with the (Linux)
+        // container, so `npm ci` in there overwrites local macOS
+        // node_modules with Linux binaries. VOLUME_COPY bundles against a
+        // copy instead, leaving the host checkout untouched.
+        bundlingFileAccess: cdk.BundlingFileAccess.VOLUME_COPY,
       },
     });
 
