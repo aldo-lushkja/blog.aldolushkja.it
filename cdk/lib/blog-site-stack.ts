@@ -78,12 +78,41 @@ export class BlogSiteStack extends cdk.Stack {
       },
     });
 
+    // Astro's static build emits one index.html per directory (e.g.
+    // /blog/<slug>/index.html). CloudFront's defaultRootObject only resolves
+    // that for the bucket root ("/"), not nested paths — with a private S3
+    // REST origin (no website-hosting endpoint), a request for "/blog/foo/"
+    // 404s unless we rewrite it to "/blog/foo/index.html" ourselves.
+    const urlRewriteFunction = new cloudfront.Function(this, 'UrlRewriteFunction', {
+      functionName: `${this.stackName}-url-rewrite`,
+      code: cloudfront.FunctionCode.fromInline(`
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+
+          if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+          } else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+          }
+
+          return request;
+        }
+      `),
+    });
+
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         responseHeadersPolicy: securityHeaders,
+        functionAssociations: [
+          {
+            function: urlRewriteFunction,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
       },
       domainNames: [domainName],
       certificate,
