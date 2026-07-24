@@ -9,7 +9,7 @@ heroImage: "https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/06y6wukkS
 
 As a software engineer who's spent years optimizing development workflows, I can confidently say that Docker and Docker Compose have revolutionized how we set up and manage local development environments. In this article, I'll share practical insights on using these tools to build robust infrastructure and accelerate your development process.
 
-## 🤌🏻 Why Docker for Local Development?
+## Why Docker for Local Development?
 
 Before diving into the how-to's, let's address a fundamental question: Why should you use Docker for local development? Here are the compelling reasons:
 
@@ -24,7 +24,7 @@ Before diving into the how-to's, let's address a fundamental question: Why shoul
 
 ![Diagram comparing a docker-compose.yml driving multiple linked containers on a shared network versus a single Dockerfile building one image and container](https://cdn.hashnode.com/res/hashnode/image/upload/v1738970501924/8d6e1555-470c-4262-80a5-5d5cad0561b9.png)
 
-## ⚙️Getting Started with Docker
+## Getting Started with Docker
 
 To begin your Docker journey, you'll need to install Docker Desktop (for Windows/Mac) or Docker Engine (for Linux). Once installed, you can create your first Dockerfile:
 
@@ -51,7 +51,7 @@ EXPOSE 3000
 CMD ["npm", "start"]
 ```
 
-## 🚄 Enter Docker Compose: Managing Multi-Container Applications
+## Enter Docker Compose: Managing Multi-Container Applications
 
 While Docker is great for single containers, real-world applications often require multiple services working together. This is where Docker Compose shines. Here's a practical example:
 
@@ -89,7 +89,7 @@ volumes:
   postgres_data:
 ```
 
-## 📋Best Practices for Local Development
+## Best Practices for Local Development
 
 ### 1\. Use Volume Mounting
 
@@ -125,7 +125,7 @@ services:
       - "9229:9229"  # Enable debugging
 ```
 
-## 🌊 Common Development Workflows
+## Common Development Workflows
 
 ### Starting Your Development Environment
 
@@ -150,7 +150,7 @@ docker-compose exec web npm test
 docker-compose exec web npm run migrate
 ```
 
-## 🛠️ Advanced Tips and Tricks
+## Advanced Tips and Tricks
 
 ### 1\. Docker Compose Override Files
 
@@ -188,7 +188,7 @@ COPY --from=development /app/dist ./dist
 CMD ["npm", "start"]
 ```
 
-## 🔨 Common Pitfalls and Solutions
+## Common Pitfalls and Solutions
 
 1. **Container Performance Issues**
     
@@ -215,13 +215,13 @@ CMD ["npm", "start"]
     * Understand Docker's networking models
         
 
-## 👋🏻 Conclusion
+## Conclusion
 
 Docker and Docker Compose are powerful tools that can significantly improve your local development workflow. By following these practices and understanding the underlying concepts, you can create a development environment that's both efficient and enjoyable to work with.
 
 Remember: The goal is to spend less time fighting with environment setup and more time writing great code. Docker helps achieve exactly that.
 
-## 📚 Additional Resources
+## Additional Resources
 
 * [Official Docker Documentation](https://docs.docker.com/)
     
