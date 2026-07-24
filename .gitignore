@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Astro
+frontend/dist/
+frontend/.astro/
+
+# CDK
+cdk/cdk.out/
+cdk/*.js
+cdk/*.d.ts
+cdk/bin/*.js
+cdk/bin/*.d.ts
+cdk/lib/*.js
+cdk/lib/*.d.ts
+cdk/test/*.js
+cdk/test/*.d.ts
+!cdk/jest.config.js
+
+# Lambdas (compiled output only; source is .ts)
+lambdas/**/*.js
+!lambdas/package.json
+
+# Misc
+.DS_Store
+*.log
+.env
+.env.local
+.idea/

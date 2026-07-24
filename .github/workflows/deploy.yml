@@ -1,0 +1,53 @@
+name: CDK Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install Lambda dependencies
+        run: |
+          cd lambdas
+          npm install
+
+      - name: Install CDK dependencies
+        run: |
+          cd cdk
+          npm install -g aws-cdk typescript
+          npm install
+
+      - name: Build CDK
+        run: |
+          cd cdk
+          npm run build
+
+      - name: Run tests
+        run: |
+          cd cdk
+          npm test
+
+      - name: Deploy CDK stacks
+        run: |
+          cd cdk
+          cdk deploy --all --require-approval never
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          DOMAIN_NAME: blog.aldolushkja.it
+          CERTIFICATE_ARN: ${{ secrets.BLOG_CERTIFICATE_ARN }}
+          GITHUB_REPO: ${{ github.repository }}
+          BEDROCK_MODEL_ID: ${{ vars.BEDROCK_MODEL_ID }}

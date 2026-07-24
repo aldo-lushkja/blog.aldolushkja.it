@@ -1,0 +1,18 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+---
+
+<BaseLayout title="Page not found" description="This page doesn't exist.">
+  <SiteHeader />
+  <main class="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-4 py-24 text-center sm:px-6">
+    <p class="text-brand text-sm font-semibold">404</p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Page not found</h1>
+    <p class="mt-4 text-gray-600 dark:text-gray-400">
+      The page you're looking for doesn't exist or has moved.
+    </p>
+    <a href="/" class="link-underline mt-6 text-brand font-medium">Back to posts</a>
+  </main>
+  <SiteFooter />
+</BaseLayout>

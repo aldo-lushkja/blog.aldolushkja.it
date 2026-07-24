@@ -1,0 +1,31 @@
+---
+import type { Post } from '@/utils/posts';
+import { postUrl, formatDate } from '@/utils/posts';
+
+export interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="group py-6">
+  <a href={postUrl(post)} class="block">
+    <h2 class="text-xl font-semibold text-gray-900 group-hover:text-brand dark:text-white dark:group-hover:text-brand-300 transition-colors">
+      {post.data.title}
+    </h2>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">{post.data.description}</p>
+    <div class="mt-3 flex items-center gap-3 text-sm text-gray-400 dark:text-gray-500">
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+      {post.data.tags.length > 0 && (
+        <span class="flex gap-2">
+          {post.data.tags.slice(0, 3).map((tag) => (
+            <span class="rounded-full bg-brand-50 px-2 py-0.5 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
+              {tag}
+            </span>
+          ))}
+        </span>
+      )}
+    </div>
+  </a>
+</article>
