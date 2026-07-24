@@ -54,7 +54,7 @@ const app = new cdk.App();
 
 const domainName = process.env.DOMAIN_NAME || 'blog.aldolushkja.it';
 const certificateArn = process.env.CERTIFICATE_ARN;
-const githubRepo = process.env.GITHUB_REPO || 'aldolushkja/blog.aldolushkja.it';
+const githubRepo = process.env.GITHUB_REPO || 'aldo-lushkja/blog.aldolushkja.it';
 const bedrockModelId = process.env.BEDROCK_MODEL_ID;
 const stackToDeploy = app.node.tryGetContext('stack');
 

@@ -64,21 +64,29 @@ AWS secrets as the other `*.aldolushkja.it` repos, plus:
 
 ## One-time prerequisites for the content pipeline
 
-1. **Enable Bedrock model access** for a Claude model in the target
-   account/region (Bedrock console → Model access). Once you know the exact
-   model id enabled for your account, set it via `BEDROCK_MODEL_ID` (env var
-   locally, or the `BEDROCK_MODEL_ID` repo variable in CI) — it defaults to
-   `anthropic.claude-3-5-sonnet-20241022-v2:0`, which may not match what's
-   enabled for you.
-2. **Create the pipeline secret** the Lambdas read at runtime:
+1. **Bedrock model access** — verified working for account `730730706394` /
+   `eu-south-1` with `eu.anthropic.claude-sonnet-4-5-20250929-v1:0` (the
+   default). Note that on-demand `InvokeModel` requires a **cross-region
+   inference profile id** (`eu.anthropic.*` / `global.anthropic.*`), not the
+   raw foundation-model id — using the latter fails with `ValidationException`.
+   List available profiles with `aws bedrock list-inference-profiles --profile
+   aldolushkja.it --region eu-south-1`. Override via `BEDROCK_MODEL_ID` (env
+   var locally, or the `BEDROCK_MODEL_ID` repo variable in CI) if needed.
+2. **Pipeline secret** — already created: `blog/content-pipeline` in Secrets
+   Manager (`eu-south-1`, account `730730706394`), holding
+   `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (reused from the trustbuddy.it
+   backup bot) and a placeholder `GITHUB_TOKEN`. Update the token once you
+   have one:
    ```bash
-   aws secretsmanager create-secret \
-     --name blog/content-pipeline \
+   aws secretsmanager put-secret-value \
+     --secret-id blog/content-pipeline \
      --profile aldolushkja.it \
      --secret-string '{"TELEGRAM_BOT_TOKEN":"...","TELEGRAM_CHAT_ID":"...","GITHUB_TOKEN":"..."}'
    ```
-   `GITHUB_TOKEN` needs repo scope to open PRs against this repository.
-3. Confirm `GITHUB_REPO` (env var, defaults to `aldolushkja/blog.aldolushkja.it`
+   `GITHUB_TOKEN` needs repo scope to open PRs against this repository — must
+   be created manually at github.com/settings/tokens (GitHub doesn't expose a
+   token-creation API for `gh`/CI to use).
+3. Confirm `GITHUB_REPO` (env var, defaults to `aldo-lushkja/blog.aldolushkja.it`
    or `${{ github.repository }}` in CI) matches this repo's `owner/name`.
 
 ## Manually triggering a pipeline run

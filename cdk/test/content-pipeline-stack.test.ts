@@ -12,7 +12,7 @@ describe('ContentPipelineStack', () => {
     const app = new cdk.App();
     const stack = new ContentPipelineStack(app, 'TestContentPipelineStack', {
       env: { account: '123456789012', region: 'us-east-1' },
-      githubRepo: 'aldolushkja/blog.aldolushkja.it',
+      githubRepo: 'aldo-lushkja/blog.aldolushkja.it',
     });
     template = Template.fromStack(stack);
   });

@@ -1,5 +1,9 @@
 # Dependencies
 node_modules/
+# This project uses npm (package-lock.json); ignore stray lockfiles from other package managers.
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
 
 # Astro
 frontend/dist/

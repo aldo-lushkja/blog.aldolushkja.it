@@ -34,10 +34,13 @@ export class ContentPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ContentPipelineStackProps) {
     super(scope, id, props);
 
+    // Verified against the account/region: on-demand invocation of Claude
+    // models requires a cross-region inference profile id, not the raw
+    // foundation-model id (InvokeModel returns ValidationException otherwise).
     const bedrockModelId =
       props.bedrockModelId ??
       this.node.tryGetContext('bedrockModelId') ??
-      'anthropic.claude-3-5-sonnet-20241022-v2:0';
+      'eu.anthropic.claude-sonnet-4-5-20250929-v1:0';
 
     const topicsTable = new dynamodb.Table(this, 'BlogTopicsTable', {
       tableName: 'BlogTopics',
@@ -59,10 +62,14 @@ export class ContentPipelineStack extends cdk.Stack {
       PIPELINE_SECRET_NAME,
     );
 
+    // Cross-region inference profiles (eu.* / global.*) fan out InvokeModel
+    // calls to the underlying foundation models across multiple regions, so
+    // the foundation-model grant can't be scoped to this.region alone —
+    // this matches AWS's own sample policies for cross-region inference.
     const bedrockInvokePolicy = new iam.PolicyStatement({
       actions: ['bedrock:InvokeModel'],
       resources: [
-        `arn:aws:bedrock:${this.region}::foundation-model/*`,
+        'arn:aws:bedrock:*::foundation-model/*',
         `arn:aws:bedrock:${this.region}:${this.account}:inference-profile/*`,
       ],
     });
