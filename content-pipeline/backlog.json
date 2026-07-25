@@ -99,6 +99,56 @@
       "sources": ["https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/"],
       "status": "new",
       "createdAt": "2026-07-25T12:00:00Z"
+    },
+    {
+      "id": "lobsters-sqlite-single-vps",
+      "title": "Lobsters ditched MariaDB for SQLite and now runs the whole site off a single VPS",
+      "summary": "After an on-and-off migration effort that started by targeting Postgres back in 2018, Lobsters moved its Rails app to SQLite in production: a ~3.8GB content database plus separate cache, queue, and rate-limiting databases, all on one box, serving a 20,000-account community. A useful evergreen counter-example to 'you'll need Postgres or a managed cluster eventually' — for read-heavy, moderate-write sites, a single-writer embedded database with careful database-per-concern separation can outperform and outsimplify a client-server RDBMS. The migration itself (verification strategy, rollback plan, cutting over a live site without an outage) is also a good case study on doing a foundational infra swap safely.",
+      "tags": ["databases", "sqlite", "architecture", "performance"],
+      "score": 7,
+      "sources": ["https://simonwillison.net/2026/Jul/14/lobsters-sqlite/", "https://lobste.rs/s/ko1ji1"],
+      "status": "new",
+      "createdAt": "2026-07-25T05:25:47Z"
+    },
+    {
+      "id": "cloudfront-vpc-origins-no-fallback-path",
+      "title": "AWS CloudFront's VPC Origins outage shows what happens when your security feature removes your failover path",
+      "summary": "A fleet-config-loading failure in the availability zone handling CloudFront's VPC Origins feature took down Canvas, Blackboard, Hugging Face, and others for three and a half hours on July 16, 2026. The interesting angle isn't 'AWS had an outage' — it's that VPC Origins' entire security pitch is eliminating the public-origin fallback path, so when the private path's control plane broke, there was no degraded mode to fall back into. A good piece on the tradeoff between 'more secure by construction' and 'fewer escape hatches when it breaks,' and how to reason about systems where the safe path and the only path are the same path.",
+      "tags": ["aws", "cloud-infrastructure", "reliability", "postmortem"],
+      "score": 7,
+      "sources": ["https://blog.incidenthub.cloud/aws-cloudfront-outage-jul-16-2026", "https://www.techtimes.com/articles/320971/20260719/aws-cloudfront-took-down-canvas-blackboard-hugging-face-control-plane-failure.htm"],
+      "status": "new",
+      "createdAt": "2026-07-25T05:25:47Z"
+    },
+    {
+      "id": "blacksmith-redis-hotpath-worker-exhaustion",
+      "title": "One saturated Redis instance took down Blacksmith's whole control plane — the postmortem is a masterclass in cascading failure",
+      "summary": "A burst of duplicate GitHub webhook deliveries pushed an already CPU-strained Redis instance (its shrinking headroom had gone unnoticed due to inadequate alerting) past saturation. Because every request handler held a worker thread while blocking on Redis, the fixed-size worker pool filled up and the service went fully unresponsive for hours on July 21, 2026. A clean, concrete teaching example on synchronous-dependency-in-the-hot-path failures: why blocking on a single shared resource with a bounded thread pool is a self-inflicted single point of failure, and what actually prevents it — timeouts, circuit breakers, load shedding, async workers, or just capacity alerting before it becomes an incident.",
+      "tags": ["reliability", "postmortem", "redis", "distributed-systems"],
+      "score": 7,
+      "sources": ["https://www.blacksmith.sh/blog/blacksmith-outage-on-july-21-2026"],
+      "status": "new",
+      "createdAt": "2026-07-25T05:25:47Z"
+    },
+    {
+      "id": "mcp-2026-07-28-goes-stateless",
+      "title": "MCP just ripped out sessions and the handshake — what the July 28 spec means if you're running MCP servers in production",
+      "summary": "The 2026-07-28 MCP specification, finalizing after a ten-week release-candidate window, removes the protocol-level initialize handshake and session state entirely: every request now carries its own protocol version, client info, and capabilities, alongside new response caching, an extensions framework, and a formal deprecation policy. Anyone who built an MCP server assuming sticky sessions and a session store now faces a forced architecture change — but a good one, since servers can sit behind a plain round-robin load balancer instead of needing gateway-level session affinity. Worth a concrete migration-guide-style piece: what breaks, what gets simpler, and why 'stateless by default' is the same lesson HTTP APIs learned a decade ago finally landing on agent protocols.",
+      "tags": ["ai-agents", "llm", "protocols", "distributed-systems"],
+      "score": 7,
+      "sources": ["https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/", "https://www.theregister.com/devops/2026/07/23/model-context-protocol-prepares-to-break-with-its-stateful-past/5276722"],
+      "status": "new",
+      "createdAt": "2026-07-25T05:25:47Z"
+    },
+    {
+      "id": "curl-ai-slop-vuln-reports-summer-of-bliss",
+      "title": "curl stopped accepting vulnerability reports for a month because AI-generated slop was burning out its security team",
+      "summary": "Daniel Stenberg declared curl's 'summer of bliss' — a month where the project would not accept or process any new vulnerability reports — after the rate of incoming reports roughly doubled year over year, driven largely by AI-generated submissions dressed in plausible technical jargon that still required three or four of the seven-person security team to manually dig through the code and disprove. A sharp, opinionated angle on the actual cost of LLM-assisted vulnerability hunting at scale: false positives aren't free, triage capacity doesn't scale with report volume, and the well-intentioned 'let AI find bugs for open source' pitch runs headfirst into unpaid maintainers who are also just trying to take a vacation.",
+      "tags": ["security", "open-source", "ai-agents", "maintainer-burnout"],
+      "score": 8,
+      "sources": ["https://cybernews.com/security/curl-stops-accepting-bug-reports-for-july/", "https://lwn.net/Articles/1077946/"],
+      "status": "new",
+      "createdAt": "2026-07-25T05:25:47Z"
     }
   ]
 }
