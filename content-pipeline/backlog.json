@@ -1,3 +1,54 @@
 {
-  "topics": []
+  "topics": [
+    {
+      "id": "postgres-listen-notify-actually-scales",
+      "title": "Postgres LISTEN/NOTIFY doesn't 'not scale' — you're just holding it wrong",
+      "summary": "DBOS benchmarked naive LISTEN/NOTIFY usage against a batched-flush approach and found a 20x throughput jump (2.9K to 60K writes/sec) by working around the global exclusive lock Postgres takes on commit when NOTIFY is involved, which blocks group commit. Worth a deep dive into why that lock exists, when LISTEN/NOTIFY is still the wrong tool (once it's the source of truth rather than a ping), and how to build the buffer-and-batch-with-polling-fallback pattern in a real service.",
+      "tags": ["postgresql", "databases", "distributed-systems", "performance"],
+      "score": 8,
+      "sources": ["https://www.dbos.dev/blog/postgres-listen-notify-scalability", "https://news.ycombinator.com/front"],
+      "status": "new",
+      "createdAt": "2026-07-25T00:21:36Z"
+    },
+    {
+      "id": "ci-secrets-leak-firmware-build-config",
+      "title": "How a security camera shipped a GitHub org admin token to every customer's browser",
+      "summary": "A researcher found a live GitHub admin token (with access to hundreds of Hanwha repos) embedded in a consumer security camera's web UI, reachable in ~30 files after decrypting the firmware. Root cause: a Vite CI build step that dumped the entire build environment into client-shipped files. A concrete case study on why 'don't leak secrets into frontend bundles' needs to be enforced by tooling (CI secret scanning, minimal-scope build tokens, bundle auditing) rather than developer discipline, especially on embedded/IoT build pipelines that get less scrutiny than web apps.",
+      "tags": ["security", "ci-cd", "supply-chain", "iot"],
+      "score": 8,
+      "sources": ["https://hhh.hn/hanwha-github-token/", "https://news.ycombinator.com/front"],
+      "status": "new",
+      "createdAt": "2026-07-25T00:21:36Z"
+    },
+    {
+      "id": "netflix-in-house-llm-serving-vs-managed",
+      "title": "Why Netflix built its own LLM serving stack instead of just calling a managed API",
+      "summary": "Netflix's platform team moved LLM inference into their existing production environment rather than standing up a separate ML silo, making explicit calls on engine selection, model packaging, API surface design, and output-constraint enforcement. A good angle piece on the build-vs-buy tradeoff for LLM infra at a company that already has serious platform muscle — when does in-house serving actually pay off versus when it's resume-driven infra work, and what does 'production revealed X' actually mean in practice.",
+      "tags": ["ai-infrastructure", "llm", "platform-engineering", "netflix"],
+      "score": 7,
+      "sources": ["https://netflixtechblog.com/in-house-llm-serving-at-netflix-a5a8e799ea2c"],
+      "status": "new",
+      "createdAt": "2026-07-25T00:21:36Z"
+    },
+    {
+      "id": "designing-for-forced-provider-maintenance",
+      "title": "When your infrastructure provider force-upgrades your database out from under you",
+      "summary": "ThriveCart's July 3, 2026 outage started when their infra provider triggered a forced, unscheduled upgrade on a core production database, knocking it offline for ~10 hours. Unlike most postmortems about self-inflicted config errors, this is the 'the outage wasn't your bug, it was your dependency's maintenance policy' case — a chance to write about designing for provider-initiated failovers you don't control: read replicas you can promote unilaterally, contractual notice windows, and testing failover paths you never chose to trigger yourself.",
+      "tags": ["reliability", "postmortem", "cloud-infrastructure", "databases"],
+      "score": 7,
+      "sources": ["https://thrivecart.com/blog/july-3-postmortem/"],
+      "status": "new",
+      "createdAt": "2026-07-25T00:21:36Z"
+    },
+    {
+      "id": "blast-radius-of-routine-config-changes",
+      "title": "Coinbase's 50-minute outage started with a 'routine' config update — what blast-radius controls were missing",
+      "summary": "Coinbase's July 14, 2026 incident took down transfers, card transactions, and onchain services for ~50 minutes after a routine configuration update misconfigured a core network component. Pair this with other 2026 'routine change' outages into a piece on why 'routine' is the most dangerous word in an infra changelog: staged rollouts, automated config diffing/validation, and blast-radius limiting for network-layer changes specifically (as opposed to app-layer deploys, which usually get more guardrails).",
+      "tags": ["reliability", "postmortem", "networking", "incident-response"],
+      "score": 7,
+      "sources": ["https://www.coinbase.com/blog/a-postmortem-of-our-july-14-2026-incident"],
+      "status": "new",
+      "createdAt": "2026-07-25T00:21:36Z"
+    }
+  ]
 }
