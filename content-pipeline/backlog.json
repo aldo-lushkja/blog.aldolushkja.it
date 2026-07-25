@@ -7,7 +7,7 @@
       "tags": ["postgresql", "databases", "distributed-systems", "performance"],
       "score": 8,
       "sources": ["https://www.dbos.dev/blog/postgres-listen-notify-scalability", "https://news.ycombinator.com/front"],
-      "status": "new",
+      "status": "drafted",
       "createdAt": "2026-07-25T00:21:36Z"
     },
     {
