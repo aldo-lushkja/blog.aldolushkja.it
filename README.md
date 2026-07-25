@@ -5,9 +5,9 @@ site on S3 + CloudFront via AWS CDK — the same deploy pattern used for
 [aldolushkja.it](https://aldolushkja.it) and `tools.aldolushkja.it`.
 
 It also has a small content pipeline that keeps a topic backlog and drafts
-post skeletons twice a month — see `content-pipeline/README.md`. It runs on
-`trustbuddy-vps` via Claude Code + systemd timers, not AWS; the article body
-is still written by hand.
+complete articles twice a month — see `content-pipeline/README.md`. It runs
+on `trustbuddy-vps` via Claude Code + systemd timers, not AWS; drafts are
+opened as PRs for human review before they're ever merged/published.
 
 ## Structure
 

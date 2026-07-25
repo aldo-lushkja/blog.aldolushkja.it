@@ -68,7 +68,11 @@ fi
 
 git push origin main
 
-NEW_TITLES="$(jq -r --argjson n "$BEFORE_COUNT" '.topics[$n:] | map("• " + .title + " (score " + (.score|tostring) + ")") | join("\n")' "$BACKLOG")"
+NEW_TITLES="$(jq -r --argjson n "$BEFORE_COUNT" '
+  .topics[$n:]
+  | map("• " + .title + " (score " + (.score|tostring) + ") — " + ((.tags // []) | map("#" + .) | join(" ")))
+  | join("\n")
+' "$BACKLOG")"
 notify "📚 *Blog topic backlog update*
 ${ADDED} new topic(s) added.
 

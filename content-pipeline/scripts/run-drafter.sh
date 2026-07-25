@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Bi-monthly draft generator. Invokes Claude Code headlessly to turn the
-# top backlog topic into a post skeleton on a new branch, verifies the
-# resulting commit only touched the expected files, then pushes the branch
-# and opens the PR itself (Claude never pushes or calls `gh pr create`).
+# top backlog topic into a complete draft article on a new branch, verifies
+# the resulting commit only touched the expected files, then pushes the
+# branch and opens the PR itself (Claude never pushes or calls `gh pr create`).
 #
 # Claude Code never sees TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID — this script
 # owns all notifications.
@@ -37,7 +37,7 @@ git reset --hard origin/main
 
 claude -p "$(cat content-pipeline/drafter-prompt.md)" \
   --dangerously-skip-permissions \
-  --max-budget-usd "${CLAUDE_MAX_BUDGET_USD:-3}"
+  --max-budget-usd "${CLAUDE_MAX_BUDGET_USD:-5}"
 
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
@@ -72,17 +72,28 @@ fi
 TITLE="$(grep -m1 '^title:' "$NEW_POST_FILE" | sed -E 's/^title:\s*"?//; s/"?\s*$//')"
 DESCRIPTION="$(grep -m1 '^description:' "$NEW_POST_FILE" | sed -E 's/^description:\s*"?//; s/"?\s*$//')"
 
+# tags: ["a", "b", "c"]  ->  #a #b #c
+TAGS_HASH="$(grep -m1 '^tags:' "$NEW_POST_FILE" \
+  | sed -E 's/^tags:\s*\[//; s/\]\s*$//' \
+  | tr ',' '\n' \
+  | sed -E 's/^\s*"//; s/"\s*$//; s/^\s+|\s+$//g' \
+  | sed '/^$/d; s/^/#/' \
+  | tr '\n' ' ')"
+TAGS_HASH="${TAGS_HASH% }"
+
 git push origin "$CURRENT_BRANCH"
 
 # `gh pr create` prints the PR URL as the last line of stdout on success
 # (it does not support --json/-q, unlike `pr view`/`pr list`).
 PR_URL="$(gh pr create \
   --title "Draft: ${TITLE}" \
-  --body "Auto-generated skeleton for **${TITLE}**
+  --body "Auto-generated draft for **${TITLE}**
 
 ${DESCRIPTION}
 
-This PR is a **draft** — fill in the body, review the front-matter, then flip \`draft: false\` and merge." \
+Tags: ${TAGS_HASH}
+
+This PR is a **draft** — review for accuracy and voice, then flip \`draft: false\` and merge." \
   --draft \
   --base main \
   --head "$CURRENT_BRANCH" 2>&1 | tail -1 || true)"
@@ -99,6 +110,8 @@ notify "✍️ *New draft ready*
 *${TITLE}*
 
 ${DESCRIPTION}
+
+${TAGS_HASH}
 
 ${PR_URL}"
 

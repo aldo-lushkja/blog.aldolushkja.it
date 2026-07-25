@@ -20,11 +20,13 @@ something to copy without re-reading that trade-off.
   diff looks wrong, the commit is reverted and nothing is pushed.
 - **Drafter** (`scripts/run-drafter.sh`, 1st & 15th of the month): runs
   Claude Code with `drafter-prompt.md`. Claude picks the top backlog topic,
-  writes a skeleton post under `frontend/src/content/blog/`, marks the
+  researches it, and writes a **complete draft article** (not just an
+  outline) under `frontend/src/content/blog/` with `draft: true`, marks the
   topic `drafted`, and commits to a new branch — it never pushes or opens
   the PR itself. The wrapper verifies the branch's diff is scoped to
   exactly the new post file (+ `backlog.json`), then pushes the branch and
-  runs `gh pr create` itself.
+  runs `gh pr create` itself. A human still reviews for accuracy/voice and
+  flips `draft: false` before merging — nothing publishes unattended.
 - **Telegram notifications** are sent entirely by the wrapper scripts, not
   by Claude — Claude Code is never given `TELEGRAM_BOT_TOKEN`/
   `TELEGRAM_CHAT_ID`, so it structurally cannot send a notification for a
