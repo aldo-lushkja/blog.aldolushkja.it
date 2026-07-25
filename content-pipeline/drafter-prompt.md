@@ -24,11 +24,18 @@ in real time.
 # Task
 
 1. Run `git pull --ff-only` on `main`.
-2. Read `content-pipeline/backlog.json` and pick the topic with `status: "new"`
-   that has the highest `score`. If there is none, report that the backlog is
-   empty and stop (no commit, no branch).
-3. Create and check out a new branch named `content/<topic-id>`.
-4. Write `frontend/src/content/blog/<topic-id>.md` with this shape:
+2. Run `gh pr list --state open` and `git branch -r` to see which topics
+   already have an in-flight draft. A topic's `status` in
+   `content-pipeline/backlog.json` only becomes `"drafted"` on `main` once
+   its PR *merges* — while the PR is open, `main` still shows it as `"new"`.
+   So: treat any topic whose id matches an existing `content/<topic-id>`
+   branch (open PR or not) as already handled, even if the backlog says
+   `"new"`.
+3. Among the remaining topics, pick the one with `status: "new"` and the
+   highest `score`. If none are left, report that there's nothing new to
+   draft and stop (no commit, no branch).
+4. Create and check out a new branch named `content/<topic-id>`.
+5. Write `frontend/src/content/blog/<topic-id>.md` with this shape:
    ```md
    ---
    title: "<refined, punchy title, <70 chars>"
@@ -55,9 +62,9 @@ in real time.
    The outline should read as a scaffold a writer can fill in, not as
    finished prose — no fully-written paragraphs, just headings plus a short
    HTML-comment note per section on the angle to take.
-5. In `content-pipeline/backlog.json`, set that topic's `status` to
+6. In `content-pipeline/backlog.json`, set that topic's `status` to
    `"drafted"`.
-6. `git add` both files and commit with a message like
+7. `git add` both files and commit with a message like
    `content: draft skeleton for "<title>"`. Do not push, do not open a PR.
 
 Report at the end, in plain text: the branch name, the file path, and the
