@@ -74,6 +74,8 @@ DESCRIPTION="$(grep -m1 '^description:' "$NEW_POST_FILE" | sed -E 's/^descriptio
 
 git push origin "$CURRENT_BRANCH"
 
+# `gh pr create` prints the PR URL as the last line of stdout on success
+# (it does not support --json/-q, unlike `pr view`/`pr list`).
 PR_URL="$(gh pr create \
   --title "Draft: ${TITLE}" \
   --body "Auto-generated skeleton for **${TITLE}**
@@ -83,8 +85,7 @@ ${DESCRIPTION}
 This PR is a **draft** — fill in the body, review the front-matter, then flip \`draft: false\` and merge." \
   --draft \
   --base main \
-  --head "$CURRENT_BRANCH" \
-  --json url -q .url 2>&1 || true)"
+  --head "$CURRENT_BRANCH" 2>&1 | tail -1 || true)"
 
 git checkout main
 
