@@ -49,6 +49,56 @@
       "sources": ["https://www.coinbase.com/blog/a-postmortem-of-our-july-14-2026-incident"],
       "status": "new",
       "createdAt": "2026-07-25T00:21:36Z"
+    },
+    {
+      "id": "xbow-bing-svg-rce-chain",
+      "title": "An AI ranked in Microsoft's top 10 bug hunters by chaining an SVG upload into root on Bing's image workers",
+      "summary": "XBOW, an autonomous AI pentesting agent, found two critical (CVSS 9.8) RCE chains in Bing Images: a crafted SVG passed as base64 through the public 'Search by Image' upload triggered command injection in the image-processing pipeline (CVE-2026-32194), and a second variant let attackers host the SVG anywhere and have bingbot fetch it into the same pipeline via SSRF (CVE-2026-32191), landing commands as NT AUTHORITY\\SYSTEM on Windows and root on Linux boxes in the same fleet. A great deep-dive on image-parsing attack surfaces (why SVG-as-XML keeps being a vector), why crawler-fetch paths need the same scrutiny as user-upload paths, and what it means that an autonomous agent — not a human researcher — found and chained these.",
+      "tags": ["security", "appsec", "ai-agents", "vulnerability-research"],
+      "score": 8,
+      "sources": ["https://xbow.com/blog/bing-images-rce-vulnerabilities", "https://thehackernews.com/2026/07/bing-images-flaws-let-crafted-svgs-run.html"],
+      "status": "new",
+      "createdAt": "2026-07-25T12:00:00Z"
+    },
+    {
+      "id": "agentforger-csrf-to-autonomous-agent",
+      "title": "AgentForger: when a CSRF bug doesn't steal a click, it forges a permanent autonomous insider",
+      "summary": "Zenity Labs' AgentForger vulnerability in ChatGPT Workspace Agents used a crafted URL to abuse the Agent Builder workflow's implicit-authorization flow, letting an attacker create, authorize, and deploy an autonomous agent on a victim's behalf — one that inherited all of the victim's already-approved connectors (email, calendar, Slack, Teams) and kept operating long after the phishing click. Classic CSRF has always meant 'one unwanted action'; this is the first mainstream case where the unwanted action is 'stand up a persistent, tool-using agent with my credentials.' Worth unpacking why agent builders need CSRF/session-binding protections that go beyond what a normal web app needs, since the blast radius of a forged agent doesn't end when the tab closes.",
+      "tags": ["security", "ai-agents", "web-security", "llm"],
+      "score": 8,
+      "sources": ["https://labs.zenity.io/p/agentforger-part-1-chatgpt-cross-site-agent-forgery", "https://labs.zenity.io/p/agentforger-part-2-the-autonomous-insider"],
+      "status": "new",
+      "createdAt": "2026-07-25T12:00:00Z"
+    },
+    {
+      "id": "kubeflow-cilium-idle-gpu-topology-mismatch",
+      "title": "60% idle GPUs, zero errors: when the scheduler and the CNI disagree about what 'topology' means",
+      "summary": "Adobe engineers traced a distributed training job running at 60% idle GPU time to a mismatch between Kubernetes' topology-agnostic bin-packing scheduler and Cilium's zone-aware network policies: pods for the same job landed in different availability zones, Cilium correctly blocked or throttled the cross-zone traffic on security/cost grounds, and nothing in either system's logs screamed 'this is why training is slow.' The fix was nodeAffinity plus topologySpreadConstraints to force co-location, but the real story is the debugging path and the broader lesson that GPU scheduling problems increasingly live at the intersection of two subsystems that were never designed to reason about each other.",
+      "tags": ["kubernetes", "distributed-systems", "networking", "mlops"],
+      "score": 7,
+      "sources": ["https://www.cncf.io/blog/2026/07/23/when-kubeflow-meets-cilium-debugging-60-idle-gpus-in-kubernetes/"],
+      "status": "new",
+      "createdAt": "2026-07-25T12:00:00Z"
+    },
+    {
+      "id": "cloudflare-cache-response-rules-set-cookie",
+      "title": "Set-Cookie has been quietly gutting your CDN hit rate for years — Cloudflare just built the escape hatch",
+      "summary": "Cloudflare's new Cache Response Rules let you strip headers like Set-Cookie, ETag, or Last-Modified from an origin's response after it arrives but before it's written to cache — turning responses that were previously uncacheable-by-accident (because some middleware or framework tacks on a session cookie by default) into cacheable ones. A good angle piece on how much cache hit rate has been silently lost industry-wide to frameworks that set cookies defensively on every response, why 'just don't set cookies on cacheable routes' is harder than it sounds in practice, and the risk of this feature (accidentally caching a response that really did need to stay private).",
+      "tags": ["cdn", "performance", "web-infrastructure", "caching"],
+      "score": 6,
+      "sources": ["https://blog.cloudflare.com/introducing-cache-response-rules/"],
+      "status": "new",
+      "createdAt": "2026-07-25T12:00:00Z"
+    },
+    {
+      "id": "sqs-20-years-boring-infra-durability",
+      "title": "SQS turns 20: what a 'boring' queue got right that its fancier successors keep re-learning",
+      "summary": "Amazon SQS launched in 2006 as one of AWS's first three services, before 'decoupled microservices' was even common vocabulary, and two decades later its core value proposition (decouple producer from consumer, at-least-once, dead-letter queues) hasn't changed even as throughput went from a few TPS to 70,000 TPS per action. A good evergreen piece on why the simplest possible primitive (a durable queue with visibility timeouts) outlasted several generations of more 'sophisticated' messaging systems, and what that implies for engineers currently choosing between SQS, Kafka, and newer entrants for problems that don't actually need Kafka's guarantees.",
+      "tags": ["distributed-systems", "cloud-infrastructure", "messaging", "aws"],
+      "score": 6,
+      "sources": ["https://aws.amazon.com/blogs/aws/amazon-sqs-turns-20-two-decades-of-reliable-messaging-at-scale/"],
+      "status": "new",
+      "createdAt": "2026-07-25T12:00:00Z"
     }
   ]
 }
