@@ -2,7 +2,6 @@ AWS_PROFILE ?= aldolushkja.it
 DOMAIN_NAME ?= blog.aldolushkja.it
 CDK_DIR := cdk
 FRONTEND_DIR := frontend
-LAMBDAS_DIR := lambdas
 
 .PHONY: help
 help:
@@ -12,15 +11,14 @@ help:
 		'  make frontend-build     Build the frontend bundle' \
 		'  make frontend-dev       Run the Astro dev server' \
 		'  make frontend-preview   Preview the production build' \
-		'  make lambdas-install    Install shared Lambda dependencies' \
 		'  make cdk-install        Install CDK dependencies' \
 		'  make cdk-build          Compile the CDK app' \
 		'  make cdk-test           Run CDK tests' \
 		'  make cdk-synth          Synthesize the CDK app' \
 		'  make cdk-diff           Show CDK diff' \
 		'  make cdk-preflight      Print AWS profile/account/region before deploy' \
-		'  make cdk-deploy         Deploy the CDK stacks with AWS profile' \
-		'  make install            Install all dependencies (frontend + lambdas + cdk)' \
+		'  make cdk-deploy         Deploy the CDK stack with AWS profile' \
+		'  make install            Install all dependencies (frontend + cdk)' \
 		'  make aws-whoami         Show the active AWS identity for the profile'
 
 .PHONY: frontend-install
@@ -38,10 +36,6 @@ frontend-dev:
 .PHONY: frontend-preview
 frontend-preview:
 	cd $(FRONTEND_DIR) && npm run preview
-
-.PHONY: lambdas-install
-lambdas-install:
-	cd $(LAMBDAS_DIR) && npm install
 
 .PHONY: cdk-install
 cdk-install:
@@ -78,7 +72,7 @@ cdk-deploy:
 	@printf 'CDK deploy command finished.\n'
 
 .PHONY: install
-install: frontend-install lambdas-install cdk-install
+install: frontend-install cdk-install
 
 .PHONY: aws-whoami
 aws-whoami:

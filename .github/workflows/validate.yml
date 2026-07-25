@@ -38,11 +38,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install Lambda dependencies
-        run: |
-          cd lambdas
-          npm ci
-
       - name: Install CDK dependencies
         run: |
           cd cdk

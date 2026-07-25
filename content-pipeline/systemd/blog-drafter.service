@@ -1,0 +1,11 @@
+[Unit]
+Description=Blog draft generator (bi-monthly)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/opt/blog-pipeline/repo
+ExecStart=/opt/blog-pipeline/repo/content-pipeline/scripts/run-drafter.sh
+TimeoutStartSec=15min

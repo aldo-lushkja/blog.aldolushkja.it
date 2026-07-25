@@ -1,0 +1,11 @@
+[Unit]
+Description=Blog topic collector (daily)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/opt/blog-pipeline/repo
+ExecStart=/opt/blog-pipeline/repo/content-pipeline/scripts/run-collector.sh
+TimeoutStartSec=15min

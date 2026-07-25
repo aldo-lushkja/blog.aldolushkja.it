@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
  * Entrypoint for the blog.aldolushkja.it CDK app.
- * Deploys the static site (S3 + CloudFront) and, unless disabled, the
- * daily/bi-monthly content pipeline (DynamoDB + Lambda + EventBridge).
+ * Deploys the static site (S3 + CloudFront). The content pipeline
+ * (topic collection + draft generation) runs on trustbuddy-vps via cron
+ * and Claude Code, not as AWS infrastructure — see content-pipeline/README.md.
  */
 import * as cdk from 'aws-cdk-lib';
 import { execSync } from 'child_process';
 import { BlogSiteStack } from '../lib/blog-site-stack';
-import { ContentPipelineStack } from '../lib/content-pipeline-stack';
 
 function resolveAwsProfile(): string | undefined {
   return process.env.AWS_PROFILE || process.env.CDK_DEFAULT_PROFILE;
@@ -54,23 +54,9 @@ const app = new cdk.App();
 
 const domainName = process.env.DOMAIN_NAME || 'blog.aldolushkja.it';
 const certificateArn = process.env.CERTIFICATE_ARN;
-const githubRepo = process.env.GITHUB_REPO || 'aldo-lushkja/blog.aldolushkja.it';
-const bedrockModelId = process.env.BEDROCK_MODEL_ID;
-const stackToDeploy = app.node.tryGetContext('stack');
 
-console.log(`🤜🏻 Deploying blog stacks with config: ${JSON.stringify({ ...env, domainName, stackToDeploy })}`);
+console.log(`🤜🏻 Deploying blog stack with config: ${JSON.stringify({ ...env, domainName })}`);
 
-if (stackToDeploy && !['site', 'pipeline'].includes(stackToDeploy)) {
-  console.error(`❌ Invalid stack name: ${stackToDeploy}. Expected "site" or "pipeline".`);
-  process.exit(1);
-}
-
-if (stackToDeploy === 'site' || !stackToDeploy) {
-  new BlogSiteStack(app, 'BlogSiteStack', { env, domainName, certificateArn });
-}
-
-if (stackToDeploy === 'pipeline' || !stackToDeploy) {
-  new ContentPipelineStack(app, 'BlogContentPipelineStack', { env, githubRepo, bedrockModelId });
-}
+new BlogSiteStack(app, 'BlogSiteStack', { env, domainName, certificateArn });
 
 app.synth();
