@@ -57,7 +57,7 @@
       "tags": ["security", "appsec", "ai-agents", "vulnerability-research"],
       "score": 8,
       "sources": ["https://xbow.com/blog/bing-images-rce-vulnerabilities", "https://thehackernews.com/2026/07/bing-images-flaws-let-crafted-svgs-run.html"],
-      "status": "new",
+      "status": "drafted",
       "createdAt": "2026-07-25T12:00:00Z"
     },
     {
