@@ -67,7 +67,7 @@
       "tags": ["security", "ai-agents", "web-security", "llm"],
       "score": 8,
       "sources": ["https://labs.zenity.io/p/agentforger-part-1-chatgpt-cross-site-agent-forgery", "https://labs.zenity.io/p/agentforger-part-2-the-autonomous-insider"],
-      "status": "new",
+      "status": "drafted",
       "createdAt": "2026-07-25T12:00:00Z"
     },
     {
