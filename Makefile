@@ -51,11 +51,11 @@ cdk-test:
 
 .PHONY: cdk-synth
 cdk-synth:
-	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) npx cdk synth --profile $(AWS_PROFILE)
+	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) ./node_modules/.bin/cdk synth --profile $(AWS_PROFILE)
 
 .PHONY: cdk-diff
 cdk-diff:
-	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) npx cdk diff --profile $(AWS_PROFILE)
+	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) ./node_modules/.bin/cdk diff --profile $(AWS_PROFILE)
 
 .PHONY: cdk-preflight
 cdk-preflight:
@@ -68,7 +68,7 @@ cdk-preflight:
 cdk-deploy:
 	$(MAKE) cdk-preflight
 	@printf 'Starting CDK deploy with verbose event output...\n'
-	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) script -q /dev/null /bin/sh -lc 'npx cdk deploy --all --require-approval never --profile $(AWS_PROFILE) --progress events --verbose'
+	cd $(CDK_DIR) && AWS_PROFILE=$(AWS_PROFILE) DOMAIN_NAME=$(DOMAIN_NAME) script -q /dev/null /bin/sh -lc './node_modules/.bin/cdk deploy --all --require-approval never --profile $(AWS_PROFILE) --progress events --verbose'
 	@printf 'CDK deploy command finished.\n'
 
 .PHONY: install
