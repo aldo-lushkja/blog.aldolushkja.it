@@ -149,6 +149,56 @@
       "sources": ["https://cybernews.com/security/curl-stops-accepting-bug-reports-for-july/", "https://lwn.net/Articles/1077946/"],
       "status": "new",
       "createdAt": "2026-07-25T05:25:47Z"
+    },
+    {
+      "id": "android-adb-wlan0-restriction-tradeoff",
+      "title": "Google wants to lock ADB to WiFi-only — a good look at how a CVE fix breaks a whole developer ecosystem",
+      "summary": "In response to CVE-2026-0073, a wireless-ADB auth bypass, a Google maintainer proposed restricting adbd to bind only to the wlan0 interface, killing on-device ADB over loopback plus ADB over USB-Ethernet and VPN. That collateral damage takes out Shizuku, libadb-android, App Manager, and the whole class of no-root Android automation tools that rely on a local ADB socket after the user has already explicitly enabled USB debugging. A good case study on threat modeling a fix's blast radius: the vulnerability requires an already-privileged local attacker, but the patch punishes an entire legitimate ecosystem built on the same primitive, and it's worth digging into whether a narrower fix (auth-binding the loopback socket instead of removing it) was on the table.",
+      "tags": ["android", "security", "mobile", "developer-tools"],
+      "score": 6,
+      "sources": ["https://kitsumed.github.io/blog/posts/android-may-soon-restrict-on-device-adb/", "https://news.ycombinator.com/front"],
+      "status": "new",
+      "createdAt": "2026-07-26T05:17:46Z"
+    },
+    {
+      "id": "microkernels-iommu-zero-copy-ipc",
+      "title": "The reason microkernels lost in the 90s is gone — IOMMUs quietly killed the context-switch tax",
+      "summary": "Microkernels lost to monolithic kernels decades ago primarily because message-passing IPC between isolated userspace servers meant expensive context switches on every call; a piece making the case that IOMMUs, now standard for about ten years, plus lock-free async ring buffers over shared memory, eliminate that overhead entirely — no copying between address spaces, no locks, no privilege-level round trip. Worth pairing the theory with a concrete build: what an IOMMU-backed driver-isolation layer looks like on top of existing tech (the post points at Xen and borrowed FreeBSD driver code), and why incidents like CrowdStrike's kernel-driver crash are a live argument for containing driver blast radius that Linux's every-driver-in-kernel model structurally can't offer.",
+      "tags": ["operating-systems", "architecture", "security", "systems-programming"],
+      "score": 7,
+      "sources": ["https://notes.hella.cheap/maybe-we-should-revisit-microkernels.html", "https://lobste.rs/"],
+      "status": "new",
+      "createdAt": "2026-07-26T05:17:46Z"
+    },
+    {
+      "id": "chrome-global-shortcut-gemini-consent",
+      "title": "Chrome silently claimed a global OS-level keyboard shortcut for Gemini — what 'the browser is now the attacker' looks like in practice",
+      "summary": "Chrome started installing a global keyboard shortcut (Ctrl+G / Alt+G) that pops up Gemini even when Chrome isn't the focused application and without any opt-in prompt, colliding with whatever the user or another app already bound to that combination. A sharp angle on a broader trend worth naming: browsers and OS-adjacent apps increasingly claim system-level surfaces (global hotkeys, background services, default handlers) the same way malware does, just with a EULA instead of an exploit — and what that implies for how engineers should scope permissions requests in their own desktop/Electron apps if they don't want to be lumped into the same bucket.",
+      "tags": ["browsers", "privacy", "security", "product-engineering"],
+      "score": 5,
+      "sources": ["https://unsung.aresluna.org/chromes-breaking-and-entering/"],
+      "status": "new",
+      "createdAt": "2026-07-26T05:17:46Z"
+    },
+    {
+      "id": "wasmtime-gc-exceptions-mainstream-languages",
+      "title": "Wasmtime just made WebAssembly a real target for Java, Python, and Go — not just Rust and C",
+      "summary": "Wasmtime 47 turned on GC and native exception handling by default: a Cheney-style semi-space copying collector that reuses Wasm linear memory for sandboxing, and try/catch/throw support that adds zero overhead to normal-return call paths. For a decade WebAssembly outside the browser has mostly meant 'compile Rust or C to a sandbox'; this is the infrastructure that lets managed, GC'd, exception-heavy languages compile to Wasm without dragging a whole language runtime along as dead weight. Good deep-dive material on how a semi-space collector actually works inside a linear-memory sandbox, what tradeoffs it makes versus a generational or mark-sweep collector, and what's still missing (the roadmap points at the component model) before this is genuinely production-ready for something like a JVM-class workload.",
+      "tags": ["webassembly", "runtimes", "programming-languages", "performance"],
+      "score": 7,
+      "sources": ["https://bytecodealliance.org/articles/wasmtime-gc"],
+      "status": "new",
+      "createdAt": "2026-07-26T05:17:46Z"
+    },
+    {
+      "id": "open-weight-ai-kubernetes-moment-governance",
+      "title": "Open-weight AI's 'Kubernetes moment': the lesson from Mesos losing to Kubernetes that AI infra vendors keep ignoring",
+      "summary": "A Mesosphere/DC:OS co-founder draws a pointed parallel between the early cloud-native infrastructure wars (Mesos built the first real distributed scheduler, then Kubernetes ate the ecosystem anyway because it was fully open and vendor-neutral) and where open-weight AI models and tooling stand today: whoever becomes the neutral, freely-extensible substrate wins the ecosystem, and no single vendor's proprietary advantage beats the combined innovation rate of everyone building on an open standard. Distinct from the usual 'should we build or buy LLM infra' framing — this is about ecosystem governance and standards capture, and it's worth examining skeptically: does the Kubernetes analogy actually hold when the 'engine' (the model weights themselves) is far more capital-intensive to replicate than a scheduler ever was?",
+      "tags": ["ai-infrastructure", "llm", "open-source", "platform-engineering"],
+      "score": 6,
+      "sources": ["https://tobi.knaup.me/2026-07-25-open-weight-ai-is-having-its-kubernetes-moment/", "https://news.ycombinator.com/item?id=49048034"],
+      "status": "new",
+      "createdAt": "2026-07-26T05:17:46Z"
     }
   ]
 }
