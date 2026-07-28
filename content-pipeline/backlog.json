@@ -249,6 +249,56 @@
       "sources": ["https://www.cole-k.com/2026/07/21/reddit/"],
       "status": "new",
       "createdAt": "2026-07-27T05:19:22Z"
+    },
+    {
+      "id": "aws-us-west-2-third-outage-network-hardware",
+      "title": "AWS's third us-west-2 outage in three months points at the same unglamorous cause: metro-edge network hardware",
+      "summary": "On July 24, 2026, a failure in the networking devices that route traffic between us-west-2 and the Seattle Metro cut connectivity for 20 minutes to over an hour depending on path, knocking out Apple Pay, DoorDash, Reddit, Hulu, and PlayStation Network in the process — the third us-west-2 incident since May, and unlike the July 16 CloudFront VPC Origins outage (a control-plane/config failure), this one was physical routing hardware. Worth a pattern piece rather than a single-incident postmortem: when the same region racks up three distinct root causes in three months, is that noise, or a sign the region's underlying network topology (single metro hop, insufficient path diversity) is the actual single point of failure everyone is patching around instead of addressing.",
+      "tags": ["aws", "cloud-infrastructure", "reliability", "networking"],
+      "score": 7,
+      "sources": ["https://blog.incidenthub.cloud/aws-us-west-2-outage-jul-24-2026", "https://www.techtimes.com/articles/321567/20260725/aws-knocks-out-apple-pay-reddit-hulu-80-minutes-third-outage-since-may.htm"],
+      "status": "new",
+      "createdAt": "2026-07-28T05:25:16Z"
+    },
+    {
+      "id": "doordash-entity-cache-envoy-valkey-proxy",
+      "title": "DoorDash put a transparent cache inside the service mesh instead of inside 50 services — 1.5M RPS, seven nines, zero app code",
+      "summary": "DoorDash's Entity Cache is a proxy caching layer built directly into their Envoy-based service mesh: it intercepts HTTP/gRPC calls before they reach upstream services, checks Valkey for a cached response, and serves hits without the calling service ever knowing caching happened — now covering 100+ endpoints across 50 services at 1.5M requests/sec with 99.99999% availability. The sharper engineering story is invalidation: instead of distributed cache-deletion fan-out, they compare Kafka event timestamps against cached response timestamps to decide staleness. A good deep-dive into mesh-level caching as an alternative to the usual 'add Redis and remember to invalidate it' pattern baked into every service separately, and what you give up (visibility, per-service tuning) by centralizing it.",
+      "tags": ["distributed-systems", "caching", "microservices", "performance"],
+      "score": 8,
+      "sources": ["https://careersatdoordash.com/blog/high-performance-proxy-cache-for-doordash-services/", "https://www.infoq.com/news/2026/07/doordash-entity-cache-proxy/"],
+      "status": "new",
+      "createdAt": "2026-07-28T05:25:16Z"
+    },
+    {
+      "id": "asyncapi-npm-cicd-trusted-pipeline-hijack",
+      "title": "The AsyncAPI npm compromise didn't steal a publish token — it hijacked the CI pipeline everyone already trusted",
+      "summary": "In the July 14, 2026 AsyncAPI supply-chain attack, the attacker didn't need stolen npm credentials at all: they got push access to the repository's 'next' branch and let the project's own legitimate GitHub Actions release workflow build and publish five malicious package versions across four packages within about 90 minutes, each carrying the same injected loader. That's a meaningfully different threat model than the same week's Jscrambler compromise (stolen publishing credentials, malicious native binaries) — here the CI system itself was the trusted party, so nothing about the publish looked anomalous to npm or to downstream consumers. Worth unpacking what 'the pipeline is the credential' means for branch protection, required-reviewer rules on release branches, and why provenance attestation (npm's newer signed-provenance features) is the actual mitigation, not tighter token scoping.",
+      "tags": ["security", "supply-chain", "ci-cd", "npm"],
+      "score": 8,
+      "sources": ["https://www.microsoft.com/en-us/security/blog/2026/07/15/unpacking-asyncapi-npm-supply-chain-compromise-import-time-payload-delivery/", "https://www.stepsecurity.io/blog/compromised-next-branch-pushes-malicious-asyncapi-generator-generator-helpers-and-generator-components-to-npm"],
+      "status": "new",
+      "createdAt": "2026-07-28T05:25:16Z"
+    },
+    {
+      "id": "planetscale-traffic-control-runaway-query",
+      "title": "When the Postgres planner quietly drops an index mid-flight, what actually stops the runaway query from taking down the database",
+      "summary": "PlanetScale's Database Traffic Control — a real-time budgeting layer that caps CPU share, burst capacity, per-query execution time, and concurrency for slices of traffic — caught a case where the Postgres query planner abandoned a previously-used index and a routine query suddenly went runaway, and the budget mechanism throttled it before it could saturate the instance and take down unrelated workloads. A good concrete case for why 'just add the right index' isn't a permanent fix (planners re-evaluate plans as data and statistics shift) and why resource-budget circuit breakers at the traffic layer are a different, complementary defense to query-level optimization — worth digging into how the budgeting actually works under MVCC without becoming its own source of contention.",
+      "tags": ["postgresql", "databases", "reliability", "performance"],
+      "score": 7,
+      "sources": ["https://planetscale.com/blog/behind-the-scenes-how-traffic-control-works", "https://planetscale.com/blog/patterns-for-postgres-traffic-control"],
+      "status": "new",
+      "createdAt": "2026-07-28T05:25:16Z"
+    },
+    {
+      "id": "argocd-repo-server-unpatched-cluster-takeover",
+      "title": "An Argo CD flaw that can hand over your whole cluster has sat unpatched since January 2025 — what that says about GitOps trust boundaries",
+      "summary": "A vulnerability in Argo CD's repo-server, reported to maintainers in early 2025 and still unpatched as of July 2026, could let an attacker who controls a Git repo Argo CD is configured to sync from pivot into cluster-wide control — because the repo-server, by GitOps design, is a highly trusted component that renders and applies whatever manifests a connected repo contains. A pointed piece on the blast radius GitOps architectures accept by default: your deployment tool trusts your Git repos as much as it trusts your cluster credentials, and 'add a webhook, connect a repo' is a much lower bar to clear than most teams' RBAC around kubectl access — plus why an 18-month-old unpatched critical in widely-deployed infrastructure tooling isn't as rare as it should be.",
+      "tags": ["kubernetes", "security", "gitops", "ci-cd"],
+      "score": 7,
+      "sources": ["https://thehackernews.com/2026/07/unpatched-argo-cd-repo-server-flaw.html"],
+      "status": "new",
+      "createdAt": "2026-07-28T05:25:16Z"
     }
   ]
 }
