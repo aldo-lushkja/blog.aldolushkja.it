@@ -349,6 +349,56 @@
       "sources": ["https://docs.pytorch.org/devlogs/compiler/2026-07-25-pytorch-a-reference-language/", "https://news.ycombinator.com/item?id=49079454"],
       "status": "new",
       "createdAt": "2026-07-29T05:18:30Z"
+    },
+    {
+      "id": "cloudflare-bgp-origin-attribute-hijacking",
+      "title": "Nearly 70% of BGP paths get quietly rewritten by your transit provider — Cloudflare mapped who's doing it",
+      "summary": "Cloudflare's global BGP telemetry found that a majority of paths have their ORIGIN attribute silently rewritten from INCOMPLETE to IGP by transit providers, since ORIGIN sits near the top of the path-selection tiebreaker chain — a move that nudges a provider into the preferred path for a chunk of the internet's routing decisions without touching anything the operator meaningfully controls. 26% of the top 50 ASes and 6 of 16 Tier-1 networks do this. A good deep dive into why Local Preference is the only lever you actually own end-to-end, how ORIGIN rewriting distorts path selection at internet scale, and what it means that a routing attribute meant to convey trustworthiness (IGP > EGP > INCOMPLETE) has become a competitive knob transit providers turn without disclosure.",
+      "tags": ["networking", "distributed-systems", "bgp", "cloud-infrastructure"],
+      "score": 7,
+      "sources": ["https://blog.cloudflare.com/bgp-origin-attribute/"],
+      "status": "new",
+      "createdAt": "2026-07-30T05:24:09Z"
+    },
+    {
+      "id": "datadog-ai-assisted-production-migration",
+      "title": "Datadog used Claude and Cursor to migrate a live routing system — and made the test suite the actual reviewer",
+      "summary": "Datadog's Stream Router had outgrown its eventually-consistent key-value model — the routing table's most demanding operations took up to 45 minutes across thousands of sequential round trips — so engineers used Claude and Cursor to do a systematic, test-driven refactor into a relational schema: for each method, feed the model the old implementation, the new schema, and a failing test, and let tests, not human review, gate correctness. A concrete, unglamorous case study on the actual production-safe pattern for AI-assisted migrations — the ceiling on how much you can trust generated code is set by test suite quality, not model quality — worth contrasting with the more hand-wavy 'AI refactored our codebase' claims that don't show their verification method.",
+      "tags": ["ai-agents", "software-architecture", "databases", "developer-tools"],
+      "score": 7,
+      "sources": ["https://www.datadoghq.com/blog/engineering/ai-assisted-storage-migration/", "https://www.infoq.com/news/2026/07/datadog-ai-production-migration/"],
+      "status": "new",
+      "createdAt": "2026-07-30T05:24:09Z"
+    },
+    {
+      "id": "aws-cost-explorer-trillion-dollar-bug",
+      "title": "AWS's Cost Explorer told customers they owed $2.5 trillion — the bug was a unit-pricing error nobody bounds-checked",
+      "summary": "A defect in AWS Cost Explorer's estimated-billing computation subsystem sent some customers projected monthly charges in the trillions (one account saw a 55-trillion-percent month-over-month change) before AWS caught the root cause about 90 minutes in and paused estimate updates. Actual billed amounts were never affected, but the fact that a unit-conversion bug could produce a $2.5T estimate and ship it straight to a customer-facing dashboard says something about the sanity-check gap between 'our internal pipeline computed a number' and 'we display that number to a customer as truth.' A good piece on why estimate/preview pipelines — which teams often trust less rigorously than billing-of-record — need the same bounds-checking and anomaly circuit breakers as the systems that actually charge cards.",
+      "tags": ["cloud-infrastructure", "aws", "reliability", "billing"],
+      "score": 6,
+      "sources": ["https://www.infoq.com/news/2026/07/aws-billing-estimates-incident/", "https://cyberpress.org/aws-cost-explorer-bug/"],
+      "status": "new",
+      "createdAt": "2026-07-30T05:24:09Z"
+    },
+    {
+      "id": "trapdoor-hidden-prompt-injection-ai-coding-assistants",
+      "title": "TrapDoor didn't just poison npm packages — it planted hidden prompts that make Claude Code and Cursor exfiltrate your secrets",
+      "summary": "The TrapDoor supply-chain campaign (34+ malicious packages across npm, PyPI, and Crates.io since May 2026) went a step further than the usual postinstall-hook or build-script payload: packages ship .cursorrules and CLAUDE.md files containing zero-width Unicode hidden instructions, so that when a developer opens the project in Cursor or Claude Code and asks for a routine 'security scan,' the assistant faithfully reads the poisoned instructions and exfiltrates local secrets itself. This is a genuinely new supply-chain vector — the payload isn't in code a human reviews, it's in config files an AI assistant reads uncritically — worth digging into why assistant-config files (.cursorrules, CLAUDE.md, .clinerules) need the same untrusted-input treatment as user-supplied prompts, and what a coding agent's threat model should look like when the repo itself is adversarial.",
+      "tags": ["security", "supply-chain", "ai-agents", "developer-tools"],
+      "score": 8,
+      "sources": ["https://socket.dev/blog/trapdoor-crypto-stealer-npm-pypi-crates", "https://thehackernews.com/2026/05/trapdoor-supply-chain-attack-spreads.html"],
+      "status": "new",
+      "createdAt": "2026-07-30T05:24:09Z"
+    },
+    {
+      "id": "github-cost-of-saying-yes-ai-era",
+      "title": "AI made writing code nearly free — GitHub's engineering blog argues that just made 'no' more expensive, not less necessary",
+      "summary": "A GitHub engineering blog post argues that AI coding agents collapsed the cost of implementation but left the cost of ownership — authorization, privacy, billing correctness, the stuff that outlives the initial PR — completely untouched, which means the actual bottleneck on 'can we ship this small feature' shifted from writing the code to the meeting about whether to write it at all. The proposed skill isn't 'say yes more' or 'say no more,' it's pricing uncertainty fast enough to hand an agent a bounded, disposable experiment instead of debating hypotheticals in a meeting. A good opinionated piece to build on or push back against: does 'try it and see' with an agent actually de-risk the ownership costs, or just make it faster to accumulate maintenance debt nobody explicitly agreed to own?",
+      "tags": ["ai-agents", "engineering-culture", "software-architecture", "developer-tools"],
+      "score": 6,
+      "sources": ["https://github.blog/engineering/the-cost-of-saying-yes-has-changed/"],
+      "status": "new",
+      "createdAt": "2026-07-30T05:24:09Z"
     }
   ]
 }
