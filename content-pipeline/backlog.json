@@ -399,6 +399,56 @@
       "sources": ["https://github.blog/engineering/the-cost-of-saying-yes-has-changed/"],
       "status": "new",
       "createdAt": "2026-07-30T05:24:09Z"
+    },
+    {
+      "id": "cloudflare-meerkat-quepaxa-leaderless-consensus",
+      "title": "Cloudflare built a leaderless consensus system because Raft's leader election doesn't survive the wide-area network",
+      "summary": "Meerkat is Cloudflare Research's new global consensus service, and instead of Raft or classic Multi-Paxos it's built on QuePaxa, a 2023 EPFL algorithm where every replica can drive writes at all times and progress never halts on a leader timeout — the first industrial deployment of QuePaxa at global scale. Proof-of-concept clusters with up to 50 globally distributed replicas kept a flat error rate under constant, deliberately-induced leader failures, which is precisely the failure mode that makes Raft-style leader election miserable across real WAN latency and partition patterns. A good deep-dive into what leaderless-by-design actually buys you over leader-based consensus, why 'no leader election storm' is a different property from 'no leader,' and what the tradeoffs are (client complexity, quorum overhead) versus the Raft/Paxos systems most engineers already know.",
+      "tags": ["distributed-systems", "consensus", "cloudflare", "cloud-infrastructure"],
+      "score": 8,
+      "sources": ["https://blog.cloudflare.com/meerkat-introduction/", "https://news.ycombinator.com/item?id=48831565"],
+      "status": "new",
+      "createdAt": "2026-07-31T00:00:00Z"
+    },
+    {
+      "id": "zig-incremental-compilation-linking-problem",
+      "title": "Zig's incremental compilation works — the reason nobody else has it is the linker, not the compiler",
+      "summary": "A detailed internals writeup of how Zig's incremental compilation actually works argues that the hard, mostly-unsolved problem was never re-analyzing changed source files (compilers have done that for decades) — it's incremental linking, patching an existing binary in place instead of relinking the world, which is why no other major toolchain has shipped this combination yet. A meaty piece for anyone who's used ccache or incremental builds and assumed the compiler was the bottleneck: what makes linking specifically resistant to incremental techniques (relocations, symbol resolution ordering, section layout), how Zig's self-hosted backend sidesteps it, and what's still missing before this generalizes past debug builds.",
+      "tags": ["programming-languages", "compilers", "zig", "systems-programming"],
+      "score": 7,
+      "sources": ["https://mlugg.co.uk/posts/incremental-compilation-internals/", "https://lobste.rs/s/rmzzdb/inside_zig_s_incremental_compilation"],
+      "status": "new",
+      "createdAt": "2026-07-31T00:00:00Z"
+    },
+    {
+      "id": "ruflo-rufroot-unauthenticated-mcp-bridge",
+      "title": "RufRoot: a CVSS 10.0 hole in an AI agent framework with 10 million downloads was just the default Docker Compose config",
+      "summary": "Ruflo, the leading open-source agent meta-harness wrapping Claude Code and OpenAI Codex, shipped an MCP Bridge component — an Express.js server exposing 233 internal tools over HTTP — with no authentication on port 3001 by default, so a single unauthenticated POST request gave full command execution inside the container. From there, CVE-2026-59726 chained into API key theft, conversation exfiltration, AI memory poisoning, and persistent backdoors with shell-history wiping to cover tracks; Noma Labs disclosed it June 30 and Ruflo shipped a fix within 24 hours. A sharp case study on why 'MCP bridge' components — the glue layer between an agent harness and its tools — need the same default-deny network posture as any other privileged internal service, and why a framework wrapping two of the most capable coding agents on the market makes an insecure default an especially high-leverage target rather than a normal severity-inflated CVE.",
+      "tags": ["security", "ai-agents", "mcp", "developer-tools"],
+      "score": 8,
+      "sources": ["https://noma.security/blog/rufroot-the-mcp-bridge-vulnerability-that-turns-agents-into-rogue-admins-cve-2026-59726/", "https://thehackernews.com/2026/07/ruflo-mcp-flaw-lets-unauthenticated.html"],
+      "status": "new",
+      "createdAt": "2026-07-31T00:00:00Z"
+    },
+    {
+      "id": "cloudflare-pqc-origin-mtls-downgrade-trap",
+      "title": "Cloudflare's post-quantum mTLS to your origin has a silent downgrade trap built into the migration path",
+      "summary": "Cloudflare now accepts ML-DSA (FIPS 204) post-quantum certificates for Authenticated Origin Pulls and Custom Origin Trust Store, extending PQ authentication from the already-PQ edge connection (X25519MLKEM768) all the way to the origin — but Cloudflare's own docs flag that if you leave classical CAs sitting in the trust store alongside the new ML-DSA one, it will still happily accept an origin certificate that chains to the classical CA, leaving the connection quietly downgradable. A good concrete piece on the unglamorous part of every PQC migration nobody markets: 'support post-quantum' almost always means 'accept post-quantum in addition to classical' at first, and the security property you actually wanted only shows up once you go back and rip out the classical trust anchors — a step that's easy to skip because nothing visibly breaks if you don't.",
+      "tags": ["security", "cryptography", "post-quantum", "cloudflare"],
+      "score": 6,
+      "sources": ["https://blog.cloudflare.com/post-quantum-authentication-to-origins/", "https://developers.cloudflare.com/changelog/post/2026-06-17-pqc-mldsa-aop-cots/"],
+      "status": "new",
+      "createdAt": "2026-07-31T00:00:00Z"
+    },
+    {
+      "id": "stripe-graph-search-database-fleet-remediation",
+      "title": "Stripe modeled its MongoDB fleet as a graph and let a pathfinding algorithm decide how to fix it — pager volume dropped 30%",
+      "summary": "Stripe's database reliability team replaced runbook-shaped auto-remediation (match this alert, run this script) with a system that models the fleet's possible states as a graph and uses graph search plus state machines to compute and execute a recovery path from 'current broken state' to 'healthy state' — cutting roughly 200 pages a year and eliminating about 12 days of unhealthy shard-state time annually, while automatically supporting new shard layouts with no extra remediation code. A good deep-dive into a genuinely different shape of self-healing infrastructure: instead of writing a remediation script per failure mode, you write down what 'healthy' and legal transitions look like and let search find the path — worth digging into how they scoped the state space so search stays tractable, and where they drew the human-approval boundary so 'auto-remediate' can't compute its way into a worse state.",
+      "tags": ["databases", "reliability", "automation", "distributed-systems"],
+      "score": 7,
+      "sources": ["https://stripe.dev/blog/how-stripe-uses-graph-search-and-state-machines-to-auto-remediate-a-global-database-fleet"],
+      "status": "new",
+      "createdAt": "2026-07-31T00:00:00Z"
     }
   ]
 }
