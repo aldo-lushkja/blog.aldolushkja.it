@@ -449,6 +449,56 @@
       "sources": ["https://stripe.dev/blog/how-stripe-uses-graph-search-and-state-machines-to-auto-remediate-a-global-database-fleet"],
       "status": "new",
       "createdAt": "2026-07-31T00:00:00Z"
+    },
+    {
+      "id": "llm-coding-2x-not-10x-plateau",
+      "title": "\"2x, not 10x\": the case that LLM coding gains have already hit their ceiling",
+      "summary": "HN's #1 story this week makes a sharp counter-argument to the 'AI coding is about to 10x everyone' narrative: once a model clears the bar needed to run reliably inside an automated feedback loop (tests, linters, agentic retries), further raw capability gains buy diminishing returns — the author's stairs analogy is that you only need to be tall enough to climb one step at a time, being tall enough for three steps doesn't help much more. The claim is that most future productivity gains won't come from smarter models but from the industry retooling process, tooling, and org structure around the capability ceiling that's already here. Worth a piece that stress-tests this against real 2026 workflows: where has retooling (not model upgrades) actually driven measurable gains, and where are teams still waiting on a model breakthrough that isn't coming.",
+      "tags": ["ai-agents", "llm", "developer-tools", "engineering-culture"],
+      "score": 7,
+      "sources": ["https://obryant.dev/p/2x-not-10x/", "https://news.ycombinator.com/item?id=49047839"],
+      "status": "new",
+      "createdAt": "2026-08-01T05:21:28Z"
+    },
+    {
+      "id": "cloudflare-cdnjs-workflows-dogfood",
+      "title": "Cloudflare rebuilt cdnjs, one of the internet's busiest CDNs, entirely on its own Workflows and Workers",
+      "summary": "Cloudflare moved cdnjs — 9 billion requests a day, one of the internet's most heavily used open-source CDNs — fully onto its own Developer Platform: a cron-triggered Workflow polls npm and GitHub for new package versions every ten minutes, spawns a download Workflow that pulls tarballs into R2, then a per-file processing Workflow that extracts, minifies, and compresses. It's a genuine 'we run production-critical infrastructure on our own primitives' dogfooding story, and a good deep-dive into durable-execution Workflows as a replacement for the usual queue-plus-worker-fleet pattern: what failure modes Workflows' automatic retry/checkpoint model handles for free versus what you'd still hand-roll with SQS/Lambda or a job queue, and where the abstraction's limits showed up at this scale.",
+      "tags": ["cloud-infrastructure", "cloudflare", "serverless", "architecture"],
+      "score": 7,
+      "sources": ["https://blog.cloudflare.com/cdnjs-dev-platform-migration/"],
+      "status": "new",
+      "createdAt": "2026-08-01T05:21:28Z"
+    },
+    {
+      "id": "rustc-compile-speed-july-2026",
+      "title": "Rust's compiler keeps getting faster in small increments — what actually moved the needle in July 2026",
+      "summary": "Nicholas Nethercote's periodic 'how to speed up the Rust compiler' report shows a 5.59% mean wall-time reduction since December 2025, with roughly half of that from a 37.92% rustdoc speedup alone — strip rustdoc out and the compiler itself only moved 2.9%, still from concrete wins like reduced per-impl processing work and continued shrinking of AST node size (72 to 64 bytes). A good technical piece on what 'compiler performance work' actually looks like in a mature, heavily-optimized codebase — single-digit percentage wins from node-size shrinkage and impl-processing changes rather than any single silver bullet — and worth covering Krabby, the experimental from-scratch fast Rust compiler now getting funded alongside rustc itself, as a bet that some gains are architecturally capped in the existing implementation.",
+      "tags": ["rust", "compilers", "performance", "programming-languages"],
+      "score": 6,
+      "sources": ["https://nnethercote.github.io/2026/07/31/how-to-speed-up-the-rust-compiler-in-july-2026.html", "https://lobste.rs/s/ycsivx/how_speed_up_rust_compiler_july_2026"],
+      "status": "new",
+      "createdAt": "2026-08-01T05:21:28Z"
+    },
+    {
+      "id": "azure-gcp-confused-deputy-cloud-iam",
+      "title": "Three lines of YAML to GCP Org Owner: the confused-deputy bugs Azure and Google didn't want to fix",
+      "summary": "Independent researcher Justin O'Leary found near-identical confused-deputy flaws in two unrelated services from two different cloud providers within weeks of each other: Azure's AKS backup feature let a Backup Contributor — a role with zero Kubernetes permissions — escalate to full cluster-admin (CVSS 9.9) by abusing the trusted-access relationship between the backup vault and the cluster, while GCP's Config Connector let any Kubernetes user write three lines of YAML and become a GCP Organization Owner in about five seconds (CVSS 10.0), bypassing IAM entirely. Both bugs share the same root shape — a trusted intermediary service holds more privilege than the user invoking it, and nothing checks that the invoking user actually has the downstream permission it's about to exercise on their behalf. Microsoft silently patched without acknowledgment; Google called its own bug 'working as intended' and denied the bounty. A good piece on confused-deputy as the default failure mode of every 'service X manages service Y on your behalf' cloud integration, and on what it means that neither vendor's response matched the severity of what was found.",
+      "tags": ["cloud-infrastructure", "security", "kubernetes", "iam"],
+      "score": 8,
+      "sources": ["https://olearysec.com/research/azure-backup-aks-silent-patch/", "https://olearysec.com/research/config-connector-authorization-bypass/", "https://www.darkreading.com/cloud-security/confused-deputy-flaws-google-cloud-microsoft-azure"],
+      "status": "new",
+      "createdAt": "2026-08-01T05:21:28Z"
+    },
+    {
+      "id": "stripe-just-wants-a-number-billing-architecture",
+      "title": "Stripe just wants a number: decoupling billing logic from business logic with billable facts",
+      "summary": "A sharp architecture post on deliberately decoupling billing from business logic: instead of teaching every part of the system how a subscription quantity maps to a Stripe API call, the system just tracks 'billable facts' (e.g. how many VMs are active, how much disk is attached) and reconciles those facts against whatever billing provider is in play through one shared reconciliation process — so onboarding a new billing method, or a new product surface like an iOS app doing in-app purchases, means teaching reconciliation one new fact-to-API mapping, not touching business logic at all. A good evergreen pattern piece for any team that's watched billing logic leak into unrelated parts of a codebase: the core idea generalizes past Stripe to any 'internal state needs to stay reconciled with an external system of record' problem (inventory sync, ad billing, usage metering).",
+      "tags": ["software-architecture", "billing", "distributed-systems", "api-design"],
+      "score": 6,
+      "sources": ["https://blog.exe.dev/billable-facts", "https://lobste.rs/s/ri8bav/stripe_just_wants_number"],
+      "status": "new",
+      "createdAt": "2026-08-01T05:21:28Z"
     }
   ]
 }
