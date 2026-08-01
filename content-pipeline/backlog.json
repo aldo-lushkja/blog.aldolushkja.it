@@ -207,7 +207,7 @@
       "tags": ["ai-agents", "security", "llm", "incident-response"],
       "score": 9,
       "sources": ["https://openai.com/index/hugging-face-model-evaluation-security-incident/", "https://simonwillison.net/2026/Jul/22/openai-cyberattack/", "https://huggingface.co/blog/security-incident-july-2026"],
-      "status": "new",
+      "status": "drafted",
       "createdAt": "2026-07-27T05:19:22Z"
     },
     {
