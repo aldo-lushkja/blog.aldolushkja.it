@@ -549,6 +549,56 @@
       "sources": ["https://www.microsoft.com/en-us/research/blog/flint-a-visualization-language-for-the-ai-era/", "https://microsoft.github.io/flint-chart/"],
       "status": "new",
       "createdAt": "2026-08-02T05:25:18Z"
+    },
+    {
+      "id": "coldcard-rng-firmware-fallback-40bit",
+      "title": "A 2021 Coldcard firmware commit quietly downgraded seed generation from 128-bit to ~40-bit entropy",
+      "summary": "Commit archaeology by researcher Dustin Dettmer traced a critical Coldcard hardware wallet bug back to a 2021 firmware change that set a flag to zero, telling the underlying MicroPython runtime to skip the hardware RNG and fall back to its default software pseudo-random generator for seed generation — silently cutting effective entropy from 128 bits to roughly 40, well within brute-force range. Nothing crashed, nothing errored, `random.bytes()` ran and returned bytes exactly as expected, which is precisely why it went undetected for years in code whose entire job is generating unguessable numbers. A sharp security piece on silent-fallback failure modes in crypto-critical code: why 'it ran without error' is the most dangerous possible signal for an RNG, and what would have caught this (startup self-tests asserting the hardware RNG is actually engaged, entropy estimation checks, fail-closed instead of fail-to-weaker-default).",
+      "tags": ["security", "cryptography", "embedded", "hardware"],
+      "score": 8,
+      "sources": ["https://insider.btcpp.dev/p/when-randombytes-runs-but-doesnt", "https://x.com/btcinsider__/status/2083592498954572145"],
+      "status": "new",
+      "createdAt": "2026-08-03T05:24:55Z"
+    },
+    {
+      "id": "cloudflare-agents-week-cloud-2-0",
+      "title": "Cloudflare's 'Cloud 2.0' bet: the one-app-serves-many-users model breaks once millions of agents are the users",
+      "summary": "Cloudflare's Agents Week 2026 shipped Sandboxes GA (persistent isolated compute environments with a shell, filesystem, and background processes spun up on demand), a zero-trust egress proxy that injects credentials into outbound sandbox traffic without exposing tokens to untrusted code running inside it, Durable Object Facets giving each agent its own isolated SQLite-backed Durable Object, Workflows now supporting 50,000 concurrent durable executions, and Artifacts (Git-compatible versioned storage aimed at tens of millions of agent-generated repos) — all justified by Cloudflare's claim that ~10% of its traffic is already agent-driven and growing 60% year over year, with a fundamentally different shape (higher fetch frequency, higher tail-latency tolerance, far more redundant access) than human browser traffic. Worth an angle piece that scrutinizes the premise rather than repeating the press release: how much of this is genuinely new infrastructure versus the familiar 'isolate every workload in its own sandbox' pattern rebranded for the agent cycle, and why the credential-injecting egress proxy — not the sandboxes themselves — looks like the actually novel primitive here.",
+      "tags": ["ai-agents", "cloud-infrastructure", "cloudflare", "architecture"],
+      "score": 7,
+      "sources": ["https://blog.cloudflare.com/agents-week-in-review/", "https://blog.cloudflare.com/agents-week-welcome/"],
+      "status": "new",
+      "createdAt": "2026-08-03T05:24:55Z"
+    },
+    {
+      "id": "rfc10015-tls12-kex-deprecation",
+      "title": "IETF just banned RSA and finite-field Diffie-Hellman from TLS 1.2 — the interesting part is what took so long",
+      "summary": "RFC 10015 formally deprecates RSA key exchange and finite-field Diffie-Hellman in TLS 1.2 and DTLS 1.2 and discourages static ECDH cipher suites, closing off more than 175 cipher suite combinations that either lack forward secrecy or have been practically weak for years (RSA key exchange enabled the Bleichenbacher/ROBOT family of attacks; static (EC)DH never rotates a session key). TLS 1.3 was never affected since it dropped these modes at launch back in 2018 — this RFC is entirely about the long tail of TLS 1.2 deployments still load-bearing in legacy systems, embedded devices, and internal enterprise traffic that can't just flip a version number. A good piece on protocol deprecation as a decade-plus process rather than a switch flip: why 'just move to TLS 1.3' undersells how much infrastructure never gets the memo, what actually breaks in compatibility matrices and fallback behavior when a cipher suite is pulled, and how this builds on the earlier (D)TLS 1.0/1.1 deprecation in RFC 8996.",
+      "tags": ["cryptography", "security", "networking", "protocols"],
+      "score": 6,
+      "sources": ["https://www.rfc-editor.org/rfc/rfc10015.html", "https://www.techtimes.com/articles/322673/20260802/ietf-formally-bans-rsa-dhe-tls-12-over-175-cipher-suites-off-limits.htm"],
+      "status": "new",
+      "createdAt": "2026-08-03T05:24:55Z"
+    },
+    {
+      "id": "cpp-float-to-int-ub",
+      "title": "Casting an out-of-range float to int is undefined behavior in C++ — and Microsoft's own safety library ships the bug",
+      "summary": "C++ makes float-to-integer conversion undefined behavior whenever the truncated value doesn't fit the destination type, even when converting to an unsigned type — and because x86's CVTTSS2SI instruction silently maps invalid conversions to INT_MIN while AArch64's FCVTZS instead saturates to the type's max or min, the identical 'invalid' conversion produces two different wrong answers depending on hardware, with nothing crashing to signal anything went wrong. The post calls out that Microsoft's own Guidelines Support Library — a library whose entire purpose is safer C++ — ships this exact defect and dismisses it as 'benign.' Good deep-dive material on why platform-masked UB is worse than UB that reliably crashes (nobody notices until a port to different hardware or a smarter optimizer exposes it), how to actually catch it with `-fsanitize=float-cast-overflow`, and whether Rust's saturating semantics for `as` casts are the default C++ should have adopted decades ago.",
+      "tags": ["c++", "systems-programming", "correctness", "compilers"],
+      "score": 6,
+      "sources": ["https://kttnr.net/blog/cpp-float-to-int-conversion-undefined-behavior/"],
+      "status": "new",
+      "createdAt": "2026-08-03T05:24:55Z"
+    },
+    {
+      "id": "ruby-central-rubygems-governance-fallout",
+      "title": "Ruby Central seized the RubyGems repo from its volunteer maintainers — a year later, the fallout is a governance case study",
+      "summary": "In September 2025, Ruby Central took direct control of the RubyGems and Bundler GitHub organizations away from the volunteer maintainers who had run them for over a decade, centralizing access under Ruby Central staff and contractors; the dispute escalated through 2026 into accusations of unauthorized AWS root-password changes, a trademark claim over the 'Bundler' name by ousted former maintainer André Arko, and a non-disparagement agreement Ruby Central wanted binding on him but not on itself. Distinct from the backlog's supply-chain-attack stories, this is a governance failure mode worth naming on its own terms: what happens when a nonprofit foundation that exists to steward critical infrastructure — the registry nearly every `gem install` in the Ruby ecosystem depends on — decides unilateral control is safer than the informal trust model that built the thing in the first place, and whether 'centralize control to reduce risk' and 'sideline the people with the most institutional knowledge of the system' can actually be pursued together without one undermining the other.",
+      "tags": ["open-source", "governance", "ruby", "engineering-culture"],
+      "score": 6,
+      "sources": ["https://andre.arko.net/2026/07/30/ruby-centrals-destructive-legacy/", "https://lobste.rs/s/qvbkpa/ruby_central_s_destructive_legacy"],
+      "status": "new",
+      "createdAt": "2026-08-03T05:24:55Z"
     }
   ]
 }
