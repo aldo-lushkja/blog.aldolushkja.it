@@ -599,6 +599,56 @@
       "sources": ["https://andre.arko.net/2026/07/30/ruby-centrals-destructive-legacy/", "https://lobste.rs/s/qvbkpa/ruby_central_s_destructive_legacy"],
       "status": "new",
       "createdAt": "2026-08-03T05:24:55Z"
+    },
+    {
+      "id": "typescript-7-native-go-compiler",
+      "title": "TypeScript 7 didn't optimize the compiler — it deleted the language it was written in",
+      "summary": "TypeScript 7.0 ships a full port of the compiler and language service from bootstrapped TypeScript-on-JS to native Go, and the numbers are the kind normally reserved for switching algorithms, not runtimes: VS Code's full build dropped from 125.7s to 10.6s (11.9x), Slack's CI went from 7.5 minutes to 1.25, and memory use fell ~18% — all from shared-memory multithreading and native code that a JS-hosted compiler structurally couldn't do. The less-hyped part is what it costs: no stable programmatic API until 7.1 (locking out Vue, Svelte, and Angular's tooling for now), a `tsc6` compatibility shim for the old behavior, and previous soft-deprecations becoming hard errors. A good deep-dive into when 'rewrite the compiler in a systems language' is the correct multi-year bet versus premature — and what it implies for every other JS-hosted dev tool (bundlers, linters, formatters) still weighing the same trade.",
+      "tags": ["typescript", "compilers", "developer-tools", "performance"],
+      "score": 7,
+      "sources": ["https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/", "https://www.infoq.com/news/2026/08/typescript-7-released/"],
+      "status": "new",
+      "createdAt": "2026-08-04T05:22:29Z"
+    },
+    {
+      "id": "planetscale-parallel-postgres-backups",
+      "title": "PlanetScale backs up petabyte Postgres fleets by throwing away the primary and building a temporary one per shard",
+      "summary": "Instead of running backups against production primaries, PlanetScale spins up one throwaway EC2 instance per shard, restores the last S3 backup onto it, replays WAL (archived-from-S3 for the bulk, live-from-primary to catch up), encrypts and re-uploads to S3, then tears the instance down — turning backup time into a function of shard count rather than total data size. A 32TB unsharded database needing ~22 hours (already blowing a twice-daily RPO) instead finishes in ~2.8 hours split across 8 shards, and the approach scales linearly enough that 100TB on 100 shards backs up as fast as 1TB on one, hitting 50GB/s aggregate throughput. Worth a concrete piece on backup architecture as a first-class distributed-systems problem rather than a cron job: the WAL-replay-then-catch-up trick for consistency, why offloading to disposable compute protects production IOPS, and why 'restore a backup to prove it works' being part of every cycle is the detail most backup systems skip.",
+      "tags": ["postgresql", "databases", "cloud-infrastructure", "reliability"],
+      "score": 7,
+      "sources": ["https://planetscale.com/blog/massively-parallel-postgres-backups"],
+      "status": "new",
+      "createdAt": "2026-08-04T05:22:29Z"
+    },
+    {
+      "id": "retries-dont-fix-eventual-consistency",
+      "title": "Retries don't fix eventual consistency — they just hide the design bug for a while",
+      "summary": "A sharp pushback on the reflexive habit of wrapping any 'the data isn't there yet' failure in a retry loop: retries are the right tool for transient failures (timeouts, dropped connections), but missing data in an eventually-consistent system isn't a transient failure, it's an expected state, and treating it as an error to retry through just adds latency, load, and flaky-looking failures instead of solving anything. The alternative the piece argues for is treating 'incomplete' as first-class: durably store each piece of data as it arrives, and on every arrival check whether the full set needed for the downstream action is now present — do the work when it is, do nothing when it isn't, no polling or backoff involved. A good evergreen piece for any team that's built a retry-wrapped call into another service and called it 'handling eventual consistency,' worth pairing with a concrete worked example (e.g., a fan-in from multiple async producers) showing where the retry version silently breaks under load that the arrival-triggered version doesn't.",
+      "tags": ["distributed-systems", "software-architecture", "reliability", "consistency"],
+      "score": 7,
+      "sources": ["https://var0.xyz/posts/retries-dont-fix-eventual-consistency.html", "https://lobste.rs/"],
+      "status": "new",
+      "createdAt": "2026-08-04T05:22:29Z"
+    },
+    {
+      "id": "sqlite-cve-llm-slop-nvd-rubber-stamp",
+      "title": "A hallucinated CVSS 10.0 SQLite vulnerability sailed through NVD and CISA without anyone checking if the code existed",
+      "summary": "JFrog researchers found that CVE-2026-51302, a critical SQLite vulnerability that NVD scored and CISA's ADP agreed was severe, cited source code that doesn't exist in the claimed version and shipped a proof-of-concept that doesn't reproduce — and it wasn't a one-off, the same GitHub-based submitter had 54 of 55 recently published CVEs show the same fabrication pattern, all flagged or pulled after JFrog's report. This is a sharper, more institutional version of the AI-slop-security story already forming in 2026 (curl's reporting moratorium was about maintainer burnout, GitHub's bounty tiering was about payout economics) — here the failure is that government-adjacent vulnerability databases published a fabricated critical CVE without anyone checking whether the cited code path was real before it went out to every org running automated CVE-based patch prioritization. Worth a piece on what verification NVD/CISA's ADP process actually does before publishing severity scores, and why 'don't blindly trust a CVE number' is now practical advice for working engineers, not just a hot take.",
+      "tags": ["security", "ai-agents", "vulnerability-research", "sqlite"],
+      "score": 7,
+      "sources": ["https://research.jfrog.com/post/sqlite-critical-cves-or-llm-slops/", "https://www.theregister.com/security/2026/08/03/ai-slop-pollutes-the-cve-pipeline-with-fake-vulns/"],
+      "status": "new",
+      "createdAt": "2026-08-04T05:22:29Z"
+    },
+    {
+      "id": "json-stringify-parse-silent-data-loss",
+      "title": "Your JSON is lying to you: what JSON.stringify quietly deletes or rewrites at every service boundary",
+      "summary": "JSON's minimal type model (strings, numbers, booleans, null, arrays, objects) was designed for portability across languages, not fidelity to any one language's actual data — so every time a JS value crosses a JSON boundary (a cache write, a queue message, an API response, a cross-language call), stringify silently drops or coerces values it can't represent: undefined vanishes, BigInt throws or gets stringified depending on context, NaN and Infinity become null, Dates become strings nobody automatically parses back, Maps and Sets serialize as empty objects. The interesting engineering point isn't 'JSON has limits,' it's that these coercions are invisible until the value leaves the process that created it, so bugs show up downstream in a different service, written by a different team, days after the value was created. A good concrete piece cataloguing the actual failure list, why 'just be careful' doesn't scale across a service boundary crossed by dozens of engineers, and what the real mitigations are (schema validation at the boundary, explicit serialization types, superjson-style wrapper formats) versus just hoping nobody puts a BigInt in a cached object.",
+      "tags": ["javascript", "software-architecture", "api-design", "correctness"],
+      "score": 6,
+      "sources": ["https://blog.gaborkoos.com/posts/2026-08-03-Your-JSON-Is-Lying-to-You/", "https://lobste.rs/s/tjgemj/your_json_is_lying_you"],
+      "status": "new",
+      "createdAt": "2026-08-04T05:22:29Z"
     }
   ]
 }
