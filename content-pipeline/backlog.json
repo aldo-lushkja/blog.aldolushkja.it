@@ -649,6 +649,56 @@
       "sources": ["https://blog.gaborkoos.com/posts/2026-08-03-Your-JSON-Is-Lying-to-You/", "https://lobste.rs/s/tjgemj/your_json_is_lying_you"],
       "status": "new",
       "createdAt": "2026-08-04T05:22:29Z"
+    },
+    {
+      "id": "keyv-npm-supply-chain-worm",
+      "title": "The Keyv npm worm proves 'signed by GitHub Actions' was never proof of anything safe",
+      "summary": "On August 4, 2026, attackers compromised the GitHub account behind keyv (127M weekly downloads) and its sibling caching packages (cacheable, flat-cache, file-entry-cache), pushed malicious commits straight to main, and cut new releases — meaning the poisoned versions carried valid npm provenance signed by GitHub Actions, the exact signal package registries increasingly tell developers to trust over 'was this code reviewed.' A preinstall hook pulled down a Bun runtime, ran an obfuscated second stage that harvested cloud and CI credentials, and republished trojanized versions of anything else the stolen npm token could reach, snowballing to hundreds of packages before containment — while separately dropping hooks into Claude Code and VS Code config, echoing the same 'poison the AI assistant's config' trick from the TrapDoor campaign already in the backlog. Worth a technical piece on why provenance attestation answers 'who published this' but not 'was the publishing account compromised,' and what would actually catch a worm that self-propagates through legitimately-signed releases — anomaly detection on publish velocity and package fan-out, not just signature verification.",
+      "tags": ["security", "supply-chain", "npm", "ci-cd"],
+      "score": 8,
+      "sources": ["https://www.aikido.dev/blog/keyv-and-friends-compromised-in-npm-supply-chain-attack", "https://thehackernews.com/2026/08/keyv-linked-npm-worm-poisons-hundreds.html"],
+      "status": "new",
+      "createdAt": "2026-08-05T05:26:13Z"
+    },
+    {
+      "id": "cloudflare-wallets-x402-agent-payments",
+      "title": "Cloudflare just gave AI agents a bank account with a spending limit your boss sets",
+      "summary": "Cloudflare's new Wallets product splits payment identity into human-held 'Account Wallets' and agent-delegated 'Virtual Wallets,' each capped by a hard spend limit the account owner sets (e.g. $100/week per agent), settling over x402 — a protocol that repurposes HTTP's long-dormant 402 Payment Required status to attach stablecoin payment directly to an ordinary HTTP request/response cycle, letting an agent autonomously pay for an API call or a piece of content mid-request instead of routing through a human-approved billing flow. It pairs with Cloudflare's separately-announced Monetization Gateway, which lets any site behind Cloudflare charge agents per request the same way. A good technical piece on what 'spend cap as the safety boundary' actually buys you versus scoped API keys or OAuth consent screens, how x402 turns a rarely-used HTTP status code into a settlement protocol, and the failure modes worth stress-testing before wiring a live payment instrument to an autonomous loop.",
+      "tags": ["ai-agents", "cloudflare", "payments", "api-design"],
+      "score": 7,
+      "sources": ["https://blog.cloudflare.com/wallets/", "https://thedefiant.io/news/defi/cloudflare-wallets-ai-agents-stablecoin-x402"],
+      "status": "new",
+      "createdAt": "2026-08-05T05:26:13Z"
+    },
+    {
+      "id": "intellij-lsp-decouple-editor-from-engine",
+      "title": "JetBrains just admitted the IDE and the code intelligence engine don't have to be the same product",
+      "summary": "JetBrains shipped a preview extension bringing IntelliJ IDEA's actual Java and Kotlin language engine — the same analysis engine that powers the full IDE — into VS Code and its forks (including Cursor) via the Language Server Protocol, with early internal results suggesting it also measurably improves terminal-based agentic coding workflows like Claude Code and Codex. That's a notable reversal for a company whose business model has long been 'buy the IDE to get the intelligence' — worth a piece on what it signals when a vendor unbundles its highest-value asset (deep semantic understanding of Java/Kotlin) from the product wrapper it used to be exclusive to, why agentic coding tools specifically are the forcing function (an agent needs the LSP's structured understanding far more than a human with visual affordances does), and whether this is the start of language intelligence becoming infrastructure that every editor and agent harness just consumes rather than a differentiator any single IDE owns.",
+      "tags": ["developer-tools", "ai-agents", "ide", "programming-languages"],
+      "score": 6,
+      "sources": ["https://blog.jetbrains.com/idea/2026/08/intellij-idea-goes-lsp/", "https://lobste.rs/s/culsub/intellij_idea_goes_lsp_java_kotlin"],
+      "status": "new",
+      "createdAt": "2026-08-05T05:26:13Z"
+    },
+    {
+      "id": "cloudflare-codex-agent-consumed-standards",
+      "title": "Cloudflare stopped writing engineering standards for humans and started writing them for the agents reviewing the PRs",
+      "summary": "Cloudflare built 'Codex,' a governed body of engineering RFCs (using RFC 2119's MUST/SHOULD vocabulary, each requirement carrying a stable slug identifier) that isn't just documentation humans read before writing code — it's structured input a fleet of specialized review agents pulls directly to gate merge requests, classifying each change by risk tier and delegating to agents covering security, performance, codex compliance, and release impact, with humans spending their time on the findings instead of the first pass. A sharp piece on what changes when the audience for your engineering standards shifts from 'the next engineer who reads the wiki' to 'the agent enforcing it on every PR': standards need machine-parseable structure and stable identifiers they never needed before, ownership models have to specify who's accountable when an agent misapplies a rule, and the interesting open question is whether this genuinely raises the standards-compliance floor or just moves bikeshedding from PR comments into RFC governance meetings.",
+      "tags": ["ai-agents", "engineering-culture", "developer-tools", "cloudflare"],
+      "score": 7,
+      "sources": ["https://blog.cloudflare.com/engineering-standards-enforcement/"],
+      "status": "new",
+      "createdAt": "2026-08-05T05:26:13Z"
+    },
+    {
+      "id": "gitea-org-mode-include-arbitrary-file-read",
+      "title": "Gitea's Org-mode renderer let anyone read your server's secrets, no login required",
+      "summary": "CVE-2026-59774 (CVSS 9.8) let an unauthenticated attacker read arbitrary files off a self-hosted Gitea server — including config files, OAuth/JWT signing keys, and internal bearer tokens — by submitting Org-mode markup against the repo markup-rendering endpoint and abusing the #+INCLUDE directive, which fed straight into the go-org library's file-read call with no path restriction, reachable against any public repo with a readable code unit enabled. It's the same underlying failure shape as the Bing SVG RCE chain already in the backlog — a rendering pipeline treats attacker-supplied markup as trusted enough to touch the filesystem — but on wildly more common infrastructure: self-hosted Git servers, often internet-facing with no additional auth layer in front. A good concrete piece on why 'render untrusted markup' is a security boundary that keeps getting rediscovered per-language and per-format (XXE for XML, SSTI for templates, this for Org-mode's #+INCLUDE), and what a markup renderer's default filesystem access should look like from day one instead of being patched in after a CVE.",
+      "tags": ["security", "git", "appsec", "vulnerability-research"],
+      "score": 7,
+      "sources": ["https://blog.gitea.com/release-of-1.27.1/", "https://cyberpress.org/critical-gitea-vulnerability-exposed/"],
+      "status": "new",
+      "createdAt": "2026-08-05T05:26:13Z"
     }
   ]
 }
