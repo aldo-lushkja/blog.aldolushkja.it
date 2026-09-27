@@ -43,12 +43,13 @@ export class BlogSiteStack extends cdk.Stack {
     });
 
     let certificate: acm.ICertificate;
-    if (props.certificateArn) {
+    if (props.certificateArn && props.certificateArn.trim() !== '') {
       certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
     } else {
-      certificate = new acm.Certificate(this, 'SiteCertificate', {
+      certificate = new acm.DnsValidatedCertificate(this, 'SiteCertificate', {
         domainName,
-        validation: acm.CertificateValidation.fromDns(zone),
+        hostedZone: zone,
+        region: 'us-east-1', // CloudFront certificates must be in us-east-1
       });
     }
 
