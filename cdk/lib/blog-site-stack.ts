@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as path from 'path';
+import * as fs from 'fs';
 import { execSync } from 'child_process';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
@@ -45,10 +46,9 @@ export class BlogSiteStack extends cdk.Stack {
     if (props.certificateArn) {
       certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', props.certificateArn);
     } else {
-      certificate = new acm.DnsValidatedCertificate(this, 'SiteCertificate', {
+      certificate = new acm.Certificate(this, 'SiteCertificate', {
         domainName,
-        hostedZone: zone,
-        region: 'us-east-1', // CloudFront certificates must be in us-east-1
+        validation: acm.CertificateValidation.fromDns(zone),
       });
     }
 
@@ -147,11 +147,19 @@ export class BlogSiteStack extends cdk.Stack {
         environment: { COMMIT_SHA: commitSha },
         command: ['bash', '-c', 'npm ci && npm run build && cp -r dist/* /asset-output'],
         user: 'root',
-        // Default BIND_MOUNT shares the host frontend/ dir with the (Linux)
-        // container, so `npm ci` in there overwrites local macOS
-        // node_modules with Linux binaries. VOLUME_COPY bundles against a
-        // copy instead, leaving the host checkout untouched.
         bundlingFileAccess: cdk.BundlingFileAccess.VOLUME_COPY,
+        local: {
+          tryBundle(outputDir: string) {
+            try {
+              execSync('npm ci && npm run build', { cwd: frontendPath, stdio: 'inherit' });
+              fs.cpSync(path.join(frontendPath, 'dist'), outputDir, { recursive: true });
+              return true;
+            } catch (error) {
+              console.warn('Local bundling failed, falling back to Docker container bundling:', error);
+              return false;
+            }
+          },
+        },
       },
     });
 
