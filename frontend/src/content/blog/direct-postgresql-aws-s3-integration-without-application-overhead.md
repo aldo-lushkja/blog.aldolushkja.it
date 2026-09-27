@@ -23,14 +23,35 @@ Here is a step-by-step guide to configuring and using native S3 file imports and
 
 ## Architecture Overview: Application-Led vs Native Database Integration
 
-```
-Traditional Flow:
-[ AWS S3 ] ----(Network Hop 1)----> [ Application Server ] ----(Network Hop 2)----> [ PostgreSQL DB ]
-                                    (Parsing, Memory, CPU)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor App as App / Scheduler
+    participant S3 as AWS S3 Bucket
+    participant Middleware as Application Middleware
+    participant DB as PostgreSQL (aws_s3)
 
-Native PostgreSQL Flow:
-[ AWS S3 ] <======================= Direct High-Speed Stream =======================> [ PostgreSQL DB ]
-                                    (Zero App Middleware)
+    rect rgb(245, 245, 245)
+        note right of App: Traditional Application-Led Flow
+        App->>Middleware: Trigger Ingest Task
+        Middleware->>S3: 1. Download/Stream S3 File
+        S3-->>Middleware: Return File Bytes (CSV/JSON)
+        note over Middleware: 2. Parse Rows, Allocate Memory,<br/>Validate & Transform Data
+        Middleware->>DB: 3. Batch INSERT SQL Queries
+        DB-->>Middleware: Confirm Insertion
+        Middleware-->>App: Job Completed
+    end
+
+    rect rgb(230, 248, 235)
+        note right of App: Native PostgreSQL aws_s3 Integration
+        App->>DB: 1. SELECT aws_s3.table_import_from_s3(...)
+        activate DB
+        DB->>S3: 2. Direct HTTPS GET Request (IAM Role Auth)
+        S3-->>DB: 3. Stream Raw Data Stream
+        note over DB: 4. Native C-Level Ingestion (COPY)
+        DB-->>App: 5. Return Import Status & Row Count
+        deactivate DB
+    end
 ```
 
 In the native flow:
@@ -147,7 +168,29 @@ SELECT * FROM aws_s3.query_export_to_s3(
 ## Advanced Architecture & Optimization Strategies
 
 ### 1. ELT Pattern with Unlogged Staging Tables
-To achieve maximum ingestion speed for large files (millions of rows):
+To achieve maximum ingestion speed for large files (millions of rows), follow an in-database ELT (Extract, Load, Transform) lifecycle:
+
+```mermaid
+stateDiagram-v2
+    [*] --> ObjectCreated: S3 File Arrives
+
+    state IngestionPhase {
+        ObjectCreated --> StagingImport: Call table_import_from_s3()
+        StagingImport --> UnloggedTable: Stream into UNLOGGED Staging Table (No WAL)
+        UnloggedTable --> IngestionCompleted: Ingestion Completed (2-3x faster)
+    }
+
+    state TransformationPhase {
+        IngestionCompleted --> InDBTransformation: Run INSERT INTO ... SELECT
+        InDBTransformation --> UpsertLogic: Execute ON CONFLICT DO UPDATE
+        UpsertLogic --> TargetTableUpdated: Target Production Table Updated
+    }
+
+    state CleanupPhase {
+        TargetTableUpdated --> TruncateStaging: TRUNCATE staging_table
+        TruncateStaging --> [*]: Pipeline Complete
+    }
+```
 
 1. **Use `UNLOGGED` Staging Tables**: Skipping Write-Ahead Logging (WAL) speeds up imports by 2-3x:
    ```sql
