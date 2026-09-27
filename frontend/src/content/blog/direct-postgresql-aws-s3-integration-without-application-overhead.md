@@ -23,6 +23,11 @@ Here is a step-by-step guide to configuring and using native S3 file imports and
 
 ## Architecture Overview: Application-Led vs Native Database Integration
 
+![Application-Led vs Native PostgreSQL S3 Ingestion Sequence Diagram](https://mermaid.ink/svg/c2VxdWVuY2VEaWFncmFtCiAgICBhdXRvbnVtYmVyCiAgICBhY3RvciBBcHAgYXMgQXBwIC8gU2NoZWR1bGVyCiAgICBwYXJ0aWNpcGFudCBTMyBhcyBBV1MgUzMgQnVja2V0CiAgICBwYXJ0aWNpcGFudCBNaWRkbGV3YXJlIGFzIEFwcGxpY2F0aW9uIE1pZGRsZXdhcmUKICAgIHBhcnRpY2lwYW50IERCIGFzIFBvc3RncmVTUUwgKGF3c19zMykKCiAgICByZWN0IHJnYigyNDUsIDI0NSwgMjQ1KQogICAgICAgIG5vdGUgcmlnaHQgb2YgQXBwOiBUcmFkaXRpb25hbCBBcHBsaWNhdGlvbi1MZWQgRmxvdwogICAgICAgIEFwcC0+Pk1pZGRsZXdhcmU6IFRyaWdnZXIgSW5nZXN0IFRhc2sKICAgICAgICBNaWRkbGV3YXJlLT4+UzM6IDEuIERvd25sb2FkL1N0cmVhbSBTMyBGaWxlCiAgICAgICAgUzMtLT4+TWlkZGxld2FyZTogUmV0dXJuIEZpbGUgQnl0ZXMgKENTVi9KU09OKQogICAgICAgIG5vdGUgb3ZlciBNaWRkbGV3YXJlOiAyLiBQYXJzZSBSb3dzLCBBbGxvY2F0ZSBNZW1vcnksPGJyLz5WYWxpZGF0ZSAmIFRyYW5zZm9ybSBEYXRhCiAgICAgICAgTWlkZGxld2FyZS0+PkRCOiAzLiBCYXRjaCBJTlNFUlQgU1FMIFF1ZXJpZXMKICAgICAgICBEQi0tPj5NaWRkbGV3YXJlOiBDb25maXJtIEluc2VydGlvbgogICAgICAgIE1pZGRsZXdhcmUtLT4+QXBwOiBKb2IgQ29tcGxldGVkCiAgICBlbmQKCiAgICByZWN0IHJnYigyMzAsIDI0OCwgMjM1KQogICAgICAgIG5vdGUgcmlnaHQgb2YgQXBwOiBOYXRpdmUgUG9zdGdyZVNRTCBhd3NfczMgSW50ZWdyYXRpb24KICAgICAgICBBcHAtPj5EQjogMS4gU0VMRUNUIGF3c19zMy50YWJsZV9pbXBvcnRfZnJvbV9zMyguLi4pCiAgICAgICAgYWN0aXZhdGUgREIKICAgICAgICBEQi0+PlMzOiAyLiBEaXJlY3QgSFRUUFMgR0VUIFJlcXVlc3QgKElBTSBSb2xlIEF1dGgpCiAgICAgICAgUzMtLT4+REI6IDMuIFN0cmVhbSBSYXcgRGF0YSBTdHJlYW0KICAgICAgICBub3RlIG92ZXIgREI6IDQuIE5hdGl2ZSBDLUxldmVsIEluZ2VzdGlvbiAoQ09QWSkKICAgICAgICBEQi0tPj5BcHA6IDUuIFJldHVybiBJbXBvcnQgU3RhdHVzICYgUm93IENvdW50CiAgICAgICAgZGVhY3RpdmF0ZSBEQgogICAgZW5k)
+
+<details>
+<summary>View Mermaid Source Code</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -53,6 +58,8 @@ sequenceDiagram
         deactivate DB
     end
 ```
+
+</details>
 
 In the native flow:
 1. The application or scheduler triggers a single SQL command (`SELECT aws_s3.table_import_from_s3(...)`).
@@ -170,6 +177,11 @@ SELECT * FROM aws_s3.query_export_to_s3(
 ### 1. ELT Pattern with Unlogged Staging Tables
 To achieve maximum ingestion speed for large files (millions of rows), follow an in-database ELT (Extract, Load, Transform) lifecycle:
 
+![In-Database ELT Pipeline State Diagram](https://mermaid.ink/svg/c3RhdGVEaWFncmFtLXYyCiAgICBbKl0gLS0+IE9iamVjdENyZWF0ZWQ6IFMzIEZpbGUgQXJyaXZlcwoKICAgIHN0YXRlIEluZ2VzdGlvblBoYXNlIHsKICAgICAgICBPYmplY3RDcmVhdGVkIC0tPiBTdGFnaW5nSW1wb3J0OiBDYWxsIHRhYmxlX2ltcG9ydF9mcm9tX3MzKCkKICAgICAgICBTdGFnaW5nSW1wb3J0IC0tPiBVbmxvZ2dlZFRhYmxlOiBTdHJlYW0gaW50byBVTkxPR0dFRCBTdGFnaW5nIFRhYmxlIChObyBXQUwpCiAgICAgICAgVW5sb2dnZWRUYWJsZSAtLT4gSW5nZXN0aW9uQ29tcGxldGVkOiBJbmdlc3Rpb24gQ29tcGxldGVkICgyLTN4IGZhc3RlcikKICAgIH0KCiAgICBzdGF0ZSBUcmFuc2Zvcm1hdGlvblBoYXNlIHsKICAgICAgICBJbmdlc3Rpb25Db21wbGV0ZWQgLS0+IEluREJUcmFuc2Zvcm1hdGlvbjogUnVuIElOU0VSVCBJTlRPIC4uLiBTRUxFQ1QKICAgICAgICBJbkRCVHJhbnNmb3JtYXRpb24gLS0+IFVwc2VydExvZ2ljOiBFeGVjdXRlIE9OIENPTkZMSUNUIERPIFVQREFURQogICAgICAgIFVwc2VydExvZ2ljIC0tPiBUYXJnZXRUYWJsZVVwZGF0ZWQ6IFRhcmdldCBQcm9kdWN0aW9uIFRhYmxlIFVwZGF0ZWQKICAgIH0KCiAgICBzdGF0ZSBDbGVhbnVwUGhhc2UgewogICAgICAgIFRhcmdldFRhYmxlVXBkYXRlZCAtLT4gVHJ1bmNhdGVTdGFnaW5nOiBUUlVOQ0FURSBzdGFnaW5nX3RhYmxlCiAgICAgICAgVHJ1bmNhdGVTdGFnaW5nIC0tPiBbKl06IFBpcGVsaW5lIENvbXBsZXRlCiAgICB9)
+
+<details>
+<summary>View Mermaid Source Code</summary>
+
 ```mermaid
 stateDiagram-v2
     [*] --> ObjectCreated: S3 File Arrives
@@ -191,6 +203,8 @@ stateDiagram-v2
         TruncateStaging --> [*]: Pipeline Complete
     }
 ```
+
+</details>
 
 1. **Use `UNLOGGED` Staging Tables**: Skipping Write-Ahead Logging (WAL) speeds up imports by 2-3x:
    ```sql
